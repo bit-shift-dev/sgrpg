@@ -1,0 +1,2541 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sigara Canavarına Karşı: İrade Savaşı</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --font-display: 'Cinzel', serif;
+      --font-body: 'Inter', sans-serif;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background-color: #090d16;
+      color: #f8fafc;
+      overflow-x: hidden;
+      user-select: none;
+    }
+
+    .font-rpg {
+      font-family: var(--font-display);
+    }
+
+    /* Özel Kaydırma Çubuğu */
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.08);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(100, 116, 139, 0.45);
+      border-radius: 9999px;
+    }
+
+    /* Ekran Sarsıntısı */
+    @keyframes screenShake {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      15% { transform: translate(-8px, 4px) rotate(-0.6deg); }
+      30% { transform: translate(8px, -4px) rotate(0.6deg); }
+      45% { transform: translate(-6px, -3px) rotate(-0.4deg); }
+      60% { transform: translate(6px, 3px) rotate(0.4deg); }
+      75% { transform: translate(-3px, 2px); }
+    }
+
+    .anim-screen-shake {
+      animation: screenShake 0.4s ease-in-out;
+    }
+
+    /* Kılıç / Balta / Gürz Kesiş Efekti */
+    @keyframes slashSweep {
+      0% { opacity: 0; transform: scale(0.55) rotate(-28deg); }
+      25% { opacity: 1; transform: scale(1.15) rotate(0deg); }
+      75% { opacity: 0.92; transform: scale(1.25) rotate(14deg); }
+      100% { opacity: 0; transform: scale(1.38) rotate(22deg); }
+    }
+
+    .anim-slash {
+      animation: slashSweep 0.48s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* Uçan Hasar / Boyut Değişim Yazısı */
+    @keyframes floatDamage {
+      0% { opacity: 0; transform: translateY(12px) scale(0.65); }
+      20% { opacity: 1; transform: translateY(-10px) scale(1.12); }
+      80% { opacity: 1; transform: translateY(-48px) scale(1); }
+      100% { opacity: 0; transform: translateY(-68px) scale(0.9); }
+    }
+
+    .anim-float-dmg {
+      animation: floatDamage 1.35s ease-out forwards;
+    }
+
+    /* =====================================================================
+       KOMPAKT TAM BEYAZ ÇİZGİ ROMAN KONUŞMA BALONLARI (KAFA ÜSTÜ)
+       ===================================================================== */
+    .comic-bubble {
+      position: relative;
+      background: #ffffff;
+      color: #0f172a;
+      border: 2.5px solid #1e293b;
+      border-radius: 22px;
+      padding: 9px 13px;
+      font-size: 11.5px;
+      line-height: 1.35;
+      max-width: 265px;
+      box-shadow: 0 10px 24px -4px rgba(15, 23, 42, 0.32), 0 2px 6px rgba(15, 23, 42, 0.16);
+      transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1),
+                  opacity 0.25s ease,
+                  border-color 0.2s ease,
+                  box-shadow 0.2s ease,
+                  max-height 0.28s ease,
+                  padding 0.25s ease,
+                  margin 0.25s ease;
+    }
+
+    @media (max-width: 640px) {
+      .comic-bubble {
+        max-width: 175px;
+        font-size: 10.5px;
+        line-height: 1.28;
+        padding: 7px 10px;
+        border-radius: 18px;
+      }
+    }
+
+    /* Aşağıya Karakterin Kafasına Bakan Keskin Konuşma Kuyruğu */
+    .comic-tail-down::after {
+      content: '';
+      position: absolute;
+      bottom: -13px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 13px 10px 0 10px;
+      border-color: #1e293b transparent transparent transparent;
+      z-index: 1;
+    }
+
+    .comic-tail-down::before {
+      content: '';
+      position: absolute;
+      bottom: -9.5px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 10px 8px 0 8px;
+      border-color: #ffffff transparent transparent transparent;
+      z-index: 2;
+    }
+
+    .hero-option-bubble:hover:not(:disabled) {
+      transform: translateY(-2px) scale(1.025);
+      border-color: #d97706;
+      box-shadow: 0 12px 26px -4px rgba(217, 119, 6, 0.35), 0 0 0 2px rgba(251, 191, 36, 0.45);
+    }
+
+    .hero-option-bubble:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+
+    .bubble-collapsed {
+      opacity: 0 !important;
+      transform: scale(0.8) translateY(8px) !important;
+      max-height: 0 !important;
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+      margin: 0 !important;
+      border-width: 0 !important;
+      overflow: hidden !important;
+      pointer-events: none !important;
+    }
+
+    /* Boyut Küçülme / Büyüme Yumuşaklığı */
+    .size-scalable {
+      transition: transform 0.65s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transform-origin: bottom center;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between bg-slate-950 text-slate-100">
+
+  <!-- ÜST BİLDİRİM TOAST (alert() yerine özel mesaj kutusu) -->
+  <div id="toast-container" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 pointer-events-none flex flex-col items-center gap-2 w-11/12 max-w-md"></div>
+
+  <!-- ========================================================= -->
+  <!-- 1. GİRİŞ / KARAKTER & HARİTA SEÇİM EKRANI                 -->
+  <!-- ========================================================= -->
+  <main id="setup-screen" class="flex-1 w-full max-w-7xl mx-auto px-4 py-6 sm:py-8 flex flex-col gap-6">
+    <!-- Başlık Alanı -->
+    <header class="text-center space-y-2">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/15 border border-amber-400/30 text-amber-300 text-xs sm:text-sm font-semibold tracking-wider uppercase">
+        <span>⚔️ RPG Diyalog & İrade Mücadelesi</span>
+      </div>
+      <h1 class="font-rpg text-3xl sm:text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-orange-500 drop-shadow-lg">
+        SİGARA CANAVARINA KARŞI
+      </h1>
+      <p class="text-slate-300 text-sm sm:text-base max-w-2xl mx-auto">
+        Kahramanını seç, ismini ver, savaşacağın şehri belirle ve kafanın üstünde beliren beyaz konuşma balonlarından <span class="text-emerald-400 font-semibold">makul cevabı</span> seçerek Sigara Canavarını küçült!
+      </p>
+    </header>
+
+    <!-- İsim ve Seviye Seçimi Satırı -->
+    <section class="grid grid-cols-1 lg:grid-cols-12 gap-4 bg-slate-900/80 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl backdrop-blur-md">
+      <!-- Kahraman İsmi Girişi -->
+      <div class="lg:col-span-5 flex flex-col justify-center gap-2">
+        <label for="hero-name-input" class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+          <span>🛡️ Kahramanının İsmi</span>
+        </label>
+        <div class="relative flex items-center">
+          <input
+            id="hero-name-input"
+            type="text"
+            maxlength="24"
+            value="Ragnar"
+            placeholder="Kahraman ismini yaz..."
+            class="w-full px-4 py-3 rounded-xl bg-slate-950/90 border border-slate-700 focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 text-white font-semibold text-base outline-none transition"
+          />
+          <button
+            type="button"
+            id="random-name-btn"
+            title="Rastgele İsim Öner"
+            class="ml-2 px-3.5 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-amber-300 text-sm font-semibold transition shrink-0"
+          >
+            🎲 Öner
+          </button>
+        </div>
+      </div>
+
+      <!-- Seviye Seçimi -->
+      <div class="lg:col-span-7 flex flex-col justify-center gap-2">
+        <span class="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
+          <span>🔥 Zorluk / Diyalog Seviyesi Seç</span>
+        </span>
+        <div id="level-selector" class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+          <button type="button" data-level="ilkel" class="level-btn active-level p-3 rounded-xl border text-left transition flex flex-col justify-between bg-amber-500/20 border-amber-400 text-white shadow-lg shadow-amber-500/10">
+            <span class="text-xs font-bold text-amber-300">SEVİYE 1</span>
+            <span class="font-bold text-sm sm:text-base">İlkel Seviye</span>
+            <span class="text-[11px] text-slate-300">5 Raunt</span>
+          </button>
+          <button type="button" data-level="orta" class="level-btn p-3 rounded-xl border border-slate-700/80 bg-slate-950/60 hover:bg-slate-800/80 text-left transition flex flex-col justify-between">
+            <span class="text-xs font-bold text-sky-400">SEVİYE 2</span>
+            <span class="font-bold text-sm sm:text-base">Orta Seviye</span>
+            <span class="text-[11px] text-slate-400">4 Raunt</span>
+          </button>
+          <button type="button" data-level="ileri" class="level-btn p-3 rounded-xl border border-slate-700/80 bg-slate-950/60 hover:bg-slate-800/80 text-left transition flex flex-col justify-between">
+            <span class="text-xs font-bold text-purple-400">SEVİYE 3</span>
+            <span class="font-bold text-sm sm:text-base">İleri Seviye</span>
+            <span class="text-[11px] text-slate-400">9 Raunt</span>
+          </button>
+          <button type="button" data-level="tumu" class="level-btn p-3 rounded-xl border border-slate-700/80 bg-slate-950/60 hover:bg-slate-800/80 text-left transition flex flex-col justify-between">
+            <span class="text-xs font-bold text-rose-400">MARATON</span>
+            <span class="font-bold text-sm sm:text-base">Tüm Seviyeler</span>
+            <span class="text-[11px] text-slate-400">18 Raunt</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 Savaşçı Karakter Seçimi -->
+    <section class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+        <h2 class="text-sm sm:text-base font-bold uppercase tracking-wider text-amber-300 flex items-center gap-2">
+          <span>⚔️ 1. Savaşçı Karakterini Seç</span>
+        </h2>
+        <span id="selected-hero-label" class="text-xs sm:text-sm font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-3 py-1 rounded-full">
+          Seçili: Viking • Ragnar (Savaş Baltası & Kalkan)
+        </span>
+      </div>
+      <div id="hero-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+        <!-- JS ile doldurulacak -->
+      </div>
+    </section>
+
+    <!-- Harita Seçimi (/img Klasörü Desteği + Güneşli SVG Şehirler + Dosya Yükleme) -->
+    <section class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+        <div>
+          <h2 class="text-sm sm:text-base font-bold uppercase tracking-wider text-sky-300 flex items-center gap-2">
+            <span>🗺️ 2. Savaş Meydanı (Şehir Haritası) Seç</span>
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">
+            Önce <code class="text-amber-300 bg-slate-800 px-1.5 py-0.5 rounded">/img/sehir.jpg</code> dosyasını yükler; dosya yoksa aydınlık ve güneşli şehir SVG manzarası otomatik açılır.
+          </p>
+        </div>
+        <label class="cursor-pointer inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs sm:text-sm font-semibold text-slate-200 transition">
+          <span>📁 Kendi Haritanı Yükle</span>
+          <input id="custom-map-upload" type="file" accept="image/*" class="hidden" />
+        </label>
+      </div>
+      <div id="map-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+        <!-- JS ile doldurulacak -->
+      </div>
+    </section>
+
+    <!-- Savaşa Başla Butonu -->
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-1 pb-4">
+      <button
+        id="start-battle-btn"
+        type="button"
+        class="w-full sm:w-auto px-10 py-4 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 hover:from-amber-400 hover:to-red-500 text-white font-rpg font-black text-lg sm:text-xl tracking-wider shadow-2xl shadow-orange-600/30 border border-amber-300/40 transform hover:scale-[1.02] active:scale-[0.98] transition flex items-center justify-center gap-3"
+      >
+        <span>⚔️ SAVAŞI BAŞLAT</span>
+      </button>
+    </div>
+  </main>
+
+  <!-- ========================================================= -->
+  <!-- 2. TAM EKRAN SAVAŞ ARENASI (ALT SEÇİM PANELİ YOK!)         -->
+  <!-- ========================================================= -->
+  <section id="battle-screen" class="hidden flex-1 flex flex-col w-full h-screen min-h-[560px] relative overflow-hidden">
+    <!-- Üst RPG Durum Çubuğu (HUD) -->
+    <header class="relative z-40 bg-slate-950/88 backdrop-blur-md border-b border-slate-800/90 px-3 sm:px-6 py-2">
+      <div class="max-w-7xl mx-auto grid grid-cols-12 items-center gap-2 sm:gap-4">
+        <!-- Sol: Kahraman Durum Barı -->
+        <div class="col-span-5 sm:col-span-4 flex flex-col gap-1">
+          <div class="flex items-center justify-between text-xs sm:text-sm font-bold">
+            <span id="hud-hero-name" class="text-amber-300 truncate max-w-[120px] sm:max-w-[190px]">Ragnar</span>
+            <span id="hud-hero-size-text" class="text-emerald-400 font-extrabold">Boyut: %100</span>
+          </div>
+          <div class="w-full h-2.5 sm:h-3 bg-slate-800 rounded-full overflow-hidden border border-slate-700 p-0.5">
+            <div id="hud-hero-bar" class="h-full bg-gradient-to-r from-emerald-500 to-teal-300 rounded-full transition-all duration-500" style="width: 100%"></div>
+          </div>
+          <div class="flex items-center justify-between text-[10px] sm:text-[11px] text-slate-400">
+            <span id="hud-hero-class" class="truncate">Viking</span>
+            <span id="hud-streak" class="text-amber-400 font-semibold shrink-0">Seri: 0 🔥</span>
+          </div>
+        </div>
+
+        <!-- Orta: Raunt, Şehir & Kontroller -->
+        <div class="col-span-2 sm:col-span-4 flex flex-col items-center justify-center text-center">
+          <div class="flex items-center gap-1.5 sm:gap-2">
+            <span id="hud-level-badge" class="hidden sm:inline-block px-2.5 py-0.5 rounded-full bg-amber-500/20 border border-amber-400/30 text-amber-300 text-[10px] font-bold uppercase">
+              İLKEL SEVİYE
+            </span>
+            <span id="hud-round-text" class="px-2.5 py-0.5 rounded-full bg-slate-800 border border-slate-700 text-white text-xs sm:text-sm font-extrabold">
+              1 / 5
+            </span>
+          </div>
+          <div class="flex items-center gap-1.5 mt-1">
+            <span id="hud-city-name" class="hidden md:inline text-xs text-sky-300 font-semibold">📍 İstanbul</span>
+            <button id="sound-toggle-btn" type="button" title="Sesi Aç/Kapat" class="px-2 py-0.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs text-slate-200 transition">
+              🔊
+            </button>
+            <button id="back-menu-btn" type="button" title="Ana Menüye Dön" class="px-2 py-0.5 rounded-lg bg-slate-800 hover:bg-rose-900/60 border border-slate-700 text-xs text-slate-200 transition">
+              🏠 Menü
+            </button>
+          </div>
+        </div>
+
+        <!-- Sağ: Sigara Canavarı Durum Barı -->
+        <div class="col-span-5 sm:col-span-4 flex flex-col gap-1">
+          <div class="flex items-center justify-between text-xs sm:text-sm font-bold">
+            <span id="hud-monster-size-text" class="text-rose-400 font-extrabold">Boyut: %100</span>
+            <span class="text-purple-300 truncate">SİGARA CANAVARI</span>
+          </div>
+          <div class="w-full h-2.5 sm:h-3 bg-slate-800 rounded-full overflow-hidden border border-slate-700 p-0.5 flex justify-end">
+            <div id="hud-monster-bar" class="h-full bg-gradient-to-l from-rose-600 via-purple-600 to-amber-500 rounded-full transition-all duration-500" style="width: 100%"></div>
+          </div>
+          <div class="flex items-center justify-between text-[10px] sm:text-[11px] text-slate-400">
+            <span class="truncate">Bağımlılık İllüzyonu</span>
+            <span class="text-rose-400 font-semibold shrink-0">Zehir & Duman 🚬</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- TAM EKRAN AÇIK SAVAŞ ARENASI -->
+    <div id="arena-container" class="relative flex-1 w-full overflow-hidden">
+      <!-- 1) Güneşli & Aydınlık Harita Arka Planı (Karanlık perde yok!) -->
+      <div id="arena-bg-wrapper" class="absolute inset-0 z-0 bg-sky-100">
+        <div id="arena-svg-bg" class="w-full h-full"></div>
+        <img
+          id="arena-img-bg"
+          alt="Şehir Haritası"
+          class="hidden w-full h-full object-cover object-center"
+        />
+        <div id="damage-vignette" class="absolute inset-0 opacity-0 transition-opacity duration-300 pointer-events-none bg-[radial-gradient(circle,transparent_48%,rgba(220,38,38,0.48)_100%)]"></div>
+      </div>
+
+      <!-- 2) Gerçekçi Vurma & Parçacık Efektleri Canvas'ı -->
+      <canvas id="fx-canvas" class="absolute inset-0 z-20 pointer-events-none w-full h-full"></canvas>
+
+      <!-- 3) Kesiş / Darbe SVG Efekt Katmanı & Uçan Hasar Yazıları -->
+      <div id="slash-overlay" class="absolute inset-0 z-20 pointer-events-none"></div>
+      <div id="floating-texts" class="absolute inset-0 z-30 pointer-events-none overflow-hidden"></div>
+
+      <!-- 4) Üst İpucu / Sonraki Raunt Yüzen Hap Butonu (Sadece raunt bitince çıkar, haritayı kapatmaz) -->
+      <div class="absolute top-2.5 left-1/2 -translate-x-1/2 z-40 flex flex-col items-center gap-1.5 pointer-events-none w-11/12 max-w-md">
+        <div id="turn-instruction" class="px-3.5 py-1 rounded-full bg-slate-900/80 backdrop-blur-sm border border-white/20 text-white text-[11px] sm:text-xs font-semibold shadow-md text-center">
+          💬 Kafanın üstündeki beyaz balondan makul cevabı seç!
+        </div>
+        <button
+          id="next-round-btn"
+          type="button"
+          class="hidden pointer-events-auto px-5 py-2 rounded-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-extrabold text-xs sm:text-sm shadow-xl shadow-emerald-600/35 border-2 border-white/80 transform hover:scale-105 active:scale-95 transition flex items-center gap-1.5"
+        >
+          <span>Sonraki Raunt ➡️</span>
+        </button>
+      </div>
+
+      <!-- 5) DİNAMİK KAFA ÜSTÜ TAKİPLİ KOMPAKT TAM BEYAZ KONUŞMA BALONLARI -->
+      <div id="bubbles-layer" class="absolute inset-0 z-30 pointer-events-none">
+        <!-- SOL: KAHRAMANIN KAFASININ TAM ÜSTÜNDEKİ 2 KOMPAKT BEYAZ SEÇİM BALONU -->
+        <div
+          id="hero-bubbles-anchor"
+          class="absolute flex flex-col items-center gap-1.5 pointer-events-none"
+          style="left: 25%; bottom: 260px; transform: translateX(-50%);"
+        >
+          <div id="hero-choice-bubbles" class="flex flex-col items-center gap-1.5 w-full">
+            <!-- JS ile 2 kompakt tam beyaz konuşma balonu doldurulacak -->
+          </div>
+        </div>
+
+        <!-- SAĞ: SİGARA CANAVARININ KAFASININ TAM ÜSTÜNDEKİ KOMPAKT BEYAZ KONUŞMA BALONU -->
+        <div
+          id="monster-bubble-anchor"
+          class="absolute flex flex-col items-center pointer-events-none"
+          style="left: 75%; bottom: 260px; transform: translateX(-50%);"
+        >
+          <div
+            id="monster-bubble-box"
+            class="comic-bubble comic-tail-down pointer-events-auto cursor-pointer"
+            title="Yazıyı hemen tamamlamak için tıkla"
+          >
+            <div class="flex items-center justify-between gap-1.5 mb-0.5 border-b border-slate-200 pb-0.5">
+              <span class="font-extrabold text-[9.5px] sm:text-[10px] uppercase tracking-wider text-rose-600 flex items-center gap-1">
+                <span>🚬 Sigara Canavarı</span>
+              </span>
+              <span id="monster-level-pill" class="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-rose-100 text-rose-700">İlkel</span>
+            </div>
+            <p id="monster-dialogue-text" class="text-slate-900 font-semibold"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6) TAM BOY CEL-SHADED RİGLİ SAVAŞÇI VE SİGARA CANAVARI (ALT ZEMİNDE AÇIKÇA GÖRÜNÜR) -->
+      <div class="absolute inset-x-0 bottom-3 sm:bottom-5 z-10 max-w-6xl mx-auto px-4 sm:px-12 flex items-end justify-between pointer-events-none">
+        
+        <!-- SOL KARAKTER: KAHRAMAN -->
+        <div class="w-1/2 flex flex-col items-center justify-end">
+          <div id="hero-stage" class="relative flex flex-col items-center">
+            <div id="hero-scaler" class="size-scalable flex flex-col items-center">
+              <div id="hero-animator" class="relative">
+                <div id="hero-svg-mount" class="w-40 h-48 sm:w-56 sm:h-64 md:w-64 md:h-72 drop-shadow-[0_12px_16px_rgba(15,23,42,0.45)]"></div>
+              </div>
+            </div>
+            <!-- Zemin Gölgesi & Kompakt İsim Etiketi -->
+            <div class="w-28 sm:w-40 h-2.5 bg-slate-950/35 rounded-full blur-[2px] -mt-1.5"></div>
+            <div class="mt-1 px-2.5 py-0.5 rounded-full bg-slate-900/85 border border-amber-400/70 text-amber-200 text-[11px] sm:text-xs font-bold shadow-md flex items-center gap-1">
+              <span id="arena-hero-name">Ragnar</span>
+              <span id="arena-hero-pct" class="text-emerald-400 font-extrabold">(%100)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- SAĞ KARAKTER: SİGARA CANAVARI -->
+        <div class="w-1/2 flex flex-col items-center justify-end">
+          <div id="monster-stage" class="relative flex flex-col items-center">
+            <div id="monster-scaler" class="size-scalable flex flex-col items-center">
+              <div id="monster-animator" class="relative">
+                <div id="monster-svg-mount" class="w-40 h-48 sm:w-56 sm:h-64 md:w-64 md:h-72 drop-shadow-[0_12px_18px_rgba(88,28,135,0.4)]"></div>
+              </div>
+            </div>
+            <!-- Zemin Gölgesi & Kompakt İsim Etiketi -->
+            <div class="w-28 sm:w-40 h-2.5 bg-slate-950/35 rounded-full blur-[2px] -mt-1.5"></div>
+            <div class="mt-1 px-2.5 py-0.5 rounded-full bg-slate-900/85 border border-rose-400/70 text-rose-200 text-[11px] sm:text-xs font-bold shadow-md flex items-center gap-1">
+              <span>Sigara Canavarı</span>
+              <span id="arena-monster-pct" class="text-rose-400 font-extrabold">(%100)</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================= -->
+  <!-- 3. ZAFER / YENİLGİ SONUÇ MODALI                           -->
+  <!-- ========================================================= -->
+  <div id="result-modal" class="hidden fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="w-full max-w-xl bg-slate-900 border-2 border-amber-400/50 rounded-3xl p-6 sm:p-8 shadow-2xl text-center space-y-5 relative overflow-hidden">
+      <div id="result-glow" class="absolute -top-24 left-1/2 -translate-x-1/2 w-80 h-48 bg-emerald-500/20 blur-3xl pointer-events-none"></div>
+      
+      <div id="result-badge" class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-xs sm:text-sm font-extrabold uppercase tracking-wider">
+        🏆 İRADE ZAFERİ
+      </div>
+
+      <h2 id="result-title" class="font-rpg text-2xl sm:text-4xl font-black text-white">
+        SİGARA CANAVARI YENİLDİ!
+      </h2>
+
+      <p id="result-desc" class="text-slate-300 text-sm sm:text-base leading-relaxed">
+        Tebrikler! Mantığın ve iradenle Sigara Canavarını küçücük bıraktın.
+      </p>
+
+      <!-- İstatistik Özeti -->
+      <div class="grid grid-cols-3 gap-2.5 bg-slate-950/80 border border-slate-800 rounded-2xl p-3.5 text-center">
+        <div>
+          <div class="text-[11px] text-slate-400 uppercase font-bold">Doğru Cevap</div>
+          <div id="stat-correct" class="text-lg sm:text-xl font-black text-emerald-400">5 / 5</div>
+        </div>
+        <div>
+          <div class="text-[11px] text-slate-400 uppercase font-bold">Senin Boyutun</div>
+          <div id="stat-hero-final" class="text-lg sm:text-xl font-black text-amber-300">%115</div>
+        </div>
+        <div>
+          <div class="text-[11px] text-slate-400 uppercase font-bold">Canavar Boyutu</div>
+          <div id="stat-monster-final" class="text-lg sm:text-xl font-black text-rose-400">%20</div>
+        </div>
+      </div>
+
+      <!-- ALO 171 Bilgi Notu -->
+      <div class="bg-emerald-950/40 border border-emerald-500/30 rounded-xl p-3 text-xs text-emerald-200">
+        💡 <strong>Unutma:</strong> Gerçek hayatta da sigarayı bırakmak istersen <strong>ALO 171 Sigara Bırakma Danışma Hattı</strong> 7/24 ücretsiz destek sunar.
+      </div>
+
+      <!-- Aksiyon Butonları -->
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+        <button id="replay-btn" type="button" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold text-sm shadow-lg transition">
+          🔄 Tekrar Oyna
+        </button>
+        <button id="next-level-btn" type="button" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-white font-bold text-sm shadow-lg transition">
+          ⚔️ Sonraki Seviye
+        </button>
+        <button id="modal-menu-btn" type="button" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-bold text-sm transition">
+          🏠 Karakter / Harita Seç
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /**
+     * =========================================================================
+     * 1. TÜM 18 VERBATİM TÜRKÇE DİYALOG + TUZAK BAHANELER
+     * =========================================================================
+     */
+    const DIALOGUE_DATA = [
+      // ════════ İLKEL SEVİYE (5) ════════
+      {
+        level: 'ilkel',
+        levelLabel: 'İlkel Seviye',
+        monster: 'İçende ölüyo içmeyende.',
+        answer: 'Ölüm herkese var, orada haklısın. Ama mesele ne zaman ve nasıl öleceğin. Sigara içenlerin yarısına yakını sigara yüzünden ölüyor ve çoğu bunu yıllarca nefes darlığı, ameliyat ve hastane odasıyla yaşıyor. Ölümü durduramam ama o yolu kısaltmamayı ve rahat geçmeyi seçebilirim.',
+        trap: 'Haklısın aslında, hepimiz bir gün öleceğiz; o yüzden bugünün keyfine bakıp yakmak en iyisi.'
+      },
+      {
+        level: 'ilkel',
+        levelLabel: 'İlkel Seviye',
+        monster: 'Keyif veriyor ama stresini azaltıyor.',
+        answer: 'Rahatladığım hissi gerçek ama kaynağı yanlış. Nikotin bir iki saatte vücuttan çekilince yoksunluk gerginliği başlıyor, sigara da onu söndürüyor. Yani sigara stresimi azaltmıyor, kendi yarattığı stresi alıyor. İçmeyenlerin günlük stres seviyesi benden daha yüksek değil, çoğu zaman daha düşük.',
+        trap: 'Gerçekten de dumanı çekince bütün derdim tasam dağılıyor, stresimi alan tek şey bu.'
+      },
+      {
+        level: 'ilkel',
+        levelLabel: 'İlkel Seviye',
+        monster: 'Daha karizmatik duruyosun.',
+        answer: 'Karizma güvenden ve sakinlikten gelir. Sigara bana güven vermiyor, sadece ellerime bir iş veriyor. Nefes nefese kalmak, kötü koku ve sararmış parmaklar ise karizma getirmiyor.',
+        trap: 'Evet, elimde sigara varken ortamda daha havalı ve olgun görünüyorum.'
+      },
+      {
+        level: 'ilkel',
+        levelLabel: 'İlkel Seviye',
+        monster: 'Ertele beolum daha yaşican.',
+        answer: 'Erteledikçe kolaylaşmıyor, zorlaşıyor. Her yıl bağımlılık rutine biraz daha yerleşiyor. "Yarın" diyen her gün bir sigara daha, bir yıl daha demek. En kolay gün bugün.',
+        trap: 'Doğru söylüyorsun, önümde uzun yıllar var; şu paketi bitirip pazartesi bırakırım.'
+      },
+      {
+        level: 'ilkel',
+        levelLabel: 'İlkel Seviye',
+        monster: 'Yak beolum bi dal.',
+        answer: 'Hiçbir zaman tek dal olmuyor. Bağımlılığın işi zaten bu: "bir dal" cümlesi kapıyı açan cümle. Hayır, teşekkürler, ben bıraktım.',
+        trap: 'Tek bir daldan hiçbir şey olmaz, sadece iki nefes alıp söndürürüm.'
+      },
+
+      // ════════ ORTA SEVİYE (4) ════════
+      {
+        level: 'orta',
+        levelLabel: 'Orta Seviye',
+        monster: 'Şimdi bu kadar işin arasında bu alışkanlığı azaltıp bırakmaylamı uğraşcan?',
+        answer: 'Sigara için de zaman ayırıyorum zaten: her molada, dışarı çıkıp içerek. Bırakmak bana yeni iş eklemiyor, o vakti ve enerjiyi geri veriyor. İlk birkaç hafta zorlayıcı olabilir ama sonrası rahatlıyor. Tek başıma olmam da gerekmiyor, ALO 171 Sigara Bırakma Hattı\'ndan ücretsiz destek alabilirim.',
+        trap: 'Bu yoğunlukta bir de bırakma stresiyle hiç uğraşamam, işlerim hafifleyince bakarım.'
+      },
+      {
+        level: 'orta',
+        levelLabel: 'Orta Seviye',
+        monster: 'Dedenin bi arkadaşı var hala 2 paket içiyo.',
+        answer: 'Hayatta kalanı görüyorsun, kalmayanlar anlatılmıyor. Buna "hayatta kalan yanılgısı" deniyor. İstisnalar kural olmaz. 2 paket içip sağlam kalan bir kişi için hasta olan ya da erken ölen çok sayıda kişi var. Ben o istisna olmayı kumar oynamak istemiyorum.',
+        trap: 'Demek ki bünyesi sağlam olana bir şey yapmıyor, benim genlerim de sağlamdır.'
+      },
+      {
+        level: 'orta',
+        levelLabel: 'Orta Seviye',
+        monster: 'İştah kontrolü sağlıyo, homidigırtlak ol bırak da hadi.',
+        answer: 'Evet, sigara iştahı biraz bastırıyor. Ama bunun bedeli akciğer ve kalp. Kilo kontrolünü yürüyüşle, düzenli uykuyla ve yeterli proteinle de yapabilirim. Fazladan birkaç kilo geri verilebilir, hasar görmüş akciğer verilemez.',
+        trap: 'Yemeklerden sonra tatlı yerine bir sigara yakmak gerçekten formumu koruyor.'
+      },
+      {
+        level: 'orta',
+        levelLabel: 'Orta Seviye',
+        monster: 'Bırakınca kilo alırsın bak.',
+        answer: 'Birkaç kilo alabilirim, bu doğru. Ama kilo geri verilebilir bir şey ve sigaranın bıraktırdığı hasar çok daha ağır. Bıraktıktan bir yıl sonra kalp hastalığı riski yarıya iniyor. Kilo için bir yürüyüş planı yapar, onu yönetirim.',
+        trap: 'Şimdi kilolarla hiç uğraşamam, en azından sigara sayesinde zayıf kalıyorum.'
+      },
+
+      // ════════ İLERİ SEVİYE (9) ════════
+      {
+        level: 'ileri',
+        levelLabel: 'İleri Seviye',
+        monster: 'İçmessen daha çok masraf çıkıyor.',
+        answer: 'Hesap kolay: bir paket fiyatını 30 ile, sonra 12 ile çarp. Sigara en başta kendi masrafı. Üstüne diş, cilt, ilaç ve doktor masrafları geliyor. İçmeyince çıkan masraf, içince çıkandan hep daha az.',
+        trap: 'Bırakırsam can sıkıntısından abur cubura daha çok para harcarım zaten.'
+      },
+      {
+        level: 'ileri',
+        levelLabel: 'İleri Seviye',
+        monster: 'Herkes içiyor, normal bu.',
+        answer: 'Herkes içmiyor, çoğunluk içmiyor ve içenlerin sayısı da düşüyor. Bir şeyin yaygın olması onu zararsız yapmaz. Çok kişi yapıyor diye acıtmaktan vazgeçmeyen bir şey normal değil, sadece yaygın.',
+        trap: 'Etrafımdaki herkesin elinde var, toplumun normali bu olmuş artık.'
+      },
+      {
+        level: 'ileri',
+        levelLabel: 'İleri Seviye',
+        monster: 'Fakirlikten içiyosun, bunu içinde bulunduğun şartlardan dolayı. Kitap mı okuyabiliyosun? Kültür sanat sporla iç içe misin?',
+        answer: 'Şartlarım zor olabilir, bunu yok saymıyorum. Ama sigara o şartları iyileştirmiyor, cebimi ve sağlığımı daha da ağırlaştırıyor. Kütüphane, yürüyüş, ücretsiz içerikler ve internetteki kurslar parasız. Sigaraya verdiğim para ise bir kitaba, bir spor ayakkabısına dönüşebilir.',
+        trap: 'Bu geçim derdinde tek lüksüm ve kaçış noktam bir paket sigara kaldı.'
+      },
+      {
+        level: 'ileri',
+        levelLabel: 'İleri Seviye',
+        monster: 'Oyalıyor ve takıntılarını buraya kanalize ediyor.',
+        answer: 'Oyalanma ihtiyacı gerçek. Ama o ihtiyacı sigara karşılamıyor, sigaranın kendisi bir takıntı hâline gelmiş. Aynı işi ellerime ve zihnime zararsız yollarla yaptırabilirim: yürüyüş, nefes egzersizi, sakız, müzik, bir el işi.',
+        trap: 'Aklım başka şeylere takılacağına sigarayla oyalanmak bana iyi geliyor.'
+      },
+      {
+        level: 'ileri',
+        levelLabel: 'İleri Seviye',
+        monster: 'Bırakırsan yapcak bişey bulamazsın bak.',
+        answer: 'Günde kaç mola sigaraya gidiyor? Her mola birkaç dakika sürüyor. Bıraktığımda o saatler boşalıyor, o boşluk ilk günlerde garip gelebilir ama geçer. Yerine bir hobi, yürüyüş ya da çay molası koyarım.',
+        trap: 'Çayın kahvenin yanında sigara olmazsa elim boş kalır, çok sıkılırım.'
+      },
+      {
+        level: 'ileri',
+        levelLabel: 'İleri Seviye',
+        monster: 'İş ve toplumsal hayatta işine yarıyor, hem motive tutuo canlılık veriyo hem de sosyal yönden garip garip molalarda beklemiyon, kıpır kıpır gevşek gibi sayemde.',
+        answer: 'Sosyalleşmek için sigara şart değil, aynı molada çay ya da kahveyle de oturabilirim. Canlılık hissi gerçek bir enerji değil, nikotin düşünce gelen yorgunluğun geçici olarak bastırılması. İçmeyen insanlar da molada sohbet ediyor ve bu insanları dışarıda bırakmıyor.',
+        trap: 'İş yerindeki bütün muhabbet sigara molasında dönüyor, içmezsem dışlanırım.'
+      },
+      {
+        level: 'ileri',
+        levelLabel: 'İleri Seviye',
+        monster: 'İçmeyekte öfkelimi olcan, ona bunamı sarcan?',
+        answer: 'İlk birkaç hafta sinirli olabilirim, bu doğru. Ama bu yoksunluğun geçici belirtisi ve zamanla kayboluyor. Aslında bugün sinirliysem, bunun bir kısmı nikotin düştüğü için. Bıraktıktan sonra ruh hâlim daha dengeli oluyor.',
+        trap: 'Çevremdekilerin kalbini kıracağıma yakayım bir tane de sakinleşeyim.'
+      },
+      {
+        level: 'ileri',
+        levelLabel: 'İleri Seviye',
+        monster: 'Şekerli paketli gıdadan daha mı iyi bu? Sanki tüm besin öğelerini alıyosun.',
+        answer: 'Bu bir kıyaslama değil, yanlış ikilem. Biri kötü diye öteki iyi olmuyor. Paketli gıdayı azaltabilirim ama bunun için sigaraya gerek yok. Sigara ise hiçbir besin öğesi vermiyor, sadece zehir veriyor.',
+        trap: 'Zaten her şey zararlı olmuş, bir tek sigarayı bıraksam ne değişecek ki?'
+      },
+      {
+        level: 'ileri',
+        levelLabel: 'İleri Seviye',
+        monster: '8-10 saat bedensel ihtiyaçların için çalıştığın bir sistemin içindesin, 2 saat de trafik, 12. Diğer 12 saatte napcan, bedeninin hazzını düşünmicende?',
+        answer: 'Hazzı düşünmek çok meşru, hatta gerekli. Ama sigara gerçek haz değil, kendi açlığını doyuruyor. Gerçek haz bedene iyi gelen şeylerden gelir: sıcak bir duş, güzel bir yemek, uyku, müzik, yürüyüş. Bedenimi düşünüyorum ve bu yüzden bırakıyorum.',
+        trap: 'Bütün gün yorulduktan sonra tek keyfim bu, kendimi bundan mahrum edemem.'
+      }
+    ];
+
+    /**
+     * =========================================================================
+     * 2. YÜKSEK DETAYLI CEL-SHADED ÇİZGİ ROMAN / ANİME SVG KARAKTERLER & İSKELET
+     * =========================================================================
+     */
+    const HEROES = [
+      {
+        id: 'viking',
+        name: 'Viking',
+        defaultHeroName: 'Ragnar',
+        weapon: 'Savaş Baltası & Kalkan',
+        slashColor: '#38bdf8',
+        desc: 'Boynuzlu çelik miğferi, kızıl örgülü sakalı ve ağır baltasıyla bahaneleri parçalar.',
+        svg: `
+          <svg viewBox="0 0 280 330" class="w-full h-full overflow-visible">
+            <defs>
+              <linearGradient id="vk-fur" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#5c3d24"/>
+                <stop offset="55%" stop-color="#3b2514"/>
+                <stop offset="100%" stop-color="#1f1209"/>
+              </linearGradient>
+              <linearGradient id="vk-leather" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#c88246"/>
+                <stop offset="55%" stop-color="#965a28"/>
+                <stop offset="100%" stop-color="#5e3412"/>
+              </linearGradient>
+              <linearGradient id="vk-steel" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#ffffff"/>
+                <stop offset="40%" stop-color="#cbd5e1"/>
+                <stop offset="80%" stop-color="#64748b"/>
+                <stop offset="100%" stop-color="#334155"/>
+              </linearGradient>
+              <linearGradient id="vk-beard" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#d96b27"/>
+                <stop offset="60%" stop-color="#9a3412"/>
+                <stop offset="100%" stop-color="#5c1d08"/>
+              </linearGradient>
+              <linearGradient id="vk-horn" x1="0" y1="1" x2="0" y2="0">
+                <stop offset="0%" stop-color="#cbd5e1"/>
+                <stop offset="65%" stop-color="#f8fafc"/>
+                <stop offset="100%" stop-color="#475569"/>
+              </linearGradient>
+            </defs>
+
+            <g class="rig-root" data-px="140" data-py="315">
+              <!-- Sol / Arka Bacak -->
+              <g class="rig-leg-l" data-px="112" data-py="196">
+                <path d="M98,196 L84,258 L76,298 L104,300 L116,258 L126,198 Z" fill="#475569" stroke="#111827" stroke-width="2.6"/>
+                <!-- Sargı Çizgileri -->
+                <path d="M86,246 L114,252 M82,262 L110,268 M79,278 L107,284" stroke="#1e293b" stroke-width="2.5"/>
+                <path d="M72,288 L105,290 L102,314 L62,316 Q64,296 72,288 Z" fill="#452715" stroke="#111827" stroke-width="2.6"/>
+              </g>
+
+              <!-- Sağ / Ön Bacak -->
+              <g class="rig-leg-r" data-px="162" data-py="196">
+                <path d="M148,198 L164,258 L174,298 L200,295 L188,254 L176,196 Z" fill="#475569" stroke="#111827" stroke-width="2.6"/>
+                <path d="M160,248 L188,244 M165,264 L193,260 M170,280 L197,276" stroke="#1e293b" stroke-width="2.5"/>
+                <path d="M170,288 L202,285 L216,306 L172,312 Q168,298 170,288 Z" fill="#452715" stroke="#111827" stroke-width="2.6"/>
+              </g>
+
+              <!-- Gövde Grubu -->
+              <g class="rig-torso" data-px="138" data-py="194">
+                <!-- Kürk Pelerin (Arka) -->
+                <path d="M62,88 Q38,154 44,226 L224,220 Q232,146 202,84 Z" fill="url(#vk-fur)" stroke="#111827" stroke-width="3"/>
+                <path d="M56,145 Q48,175 54,205 M212,140 Q220,170 214,200" stroke="#1c110a" stroke-width="2.2" fill="none"/>
+
+                <!-- Kırmızı Şalvar Pantolon -->
+                <path d="M90,184 Q84,218 102,226 L130,224 L138,202 L146,224 L178,224 Q190,214 182,184 Z" fill="#dc2626" stroke="#111827" stroke-width="2.6"/>
+                <path d="M104,192 Q112,212 108,222 M168,192 Q160,212 164,222" stroke="#7f1d1d" stroke-width="2.2" fill="none"/>
+
+                <!-- Arka Kol & Yuvarlak Viking Kalkanı -->
+                <g class="rig-arm-back" data-px="184" data-py="100">
+                  <path d="M180,96 Q206,128 198,158 L178,156 Q186,128 168,104 Z" fill="#e5d5c0" stroke="#111827" stroke-width="2.5"/>
+                  <ellipse cx="208" cy="152" rx="32" ry="52" transform="rotate(8 208 152)" fill="#784922" stroke="#111827" stroke-width="3"/>
+                  <ellipse cx="208" cy="152" rx="27" ry="45" transform="rotate(8 208 152)" fill="none" stroke="#94a3b8" stroke-width="4.5"/>
+                  <line x1="194" y1="108" x2="184" y2="194" stroke="#452715" stroke-width="2"/>
+                  <line x1="222" y1="110" x2="212" y2="196" stroke="#452715" stroke-width="2"/>
+                  <ellipse cx="208" cy="152" rx="11" ry="18" transform="rotate(8 208 152)" fill="url(#vk-steel)" stroke="#111827" stroke-width="2.2"/>
+                </g>
+
+                <!-- Kayışlı Deri Brigandine Gövde Zırhı -->
+                <path d="M88,88 L186,88 L190,196 Q138,210 86,196 Z" fill="url(#vk-leather)" stroke="#111827" stroke-width="3"/>
+                <!-- Göğüs Gölge & Zırh Dilimleri -->
+                <path d="M142,90 L185,90 L189,194 L142,202 Z" fill="rgba(24, 12, 4, 0.24)"/>
+                <g stroke="#291507" stroke-width="2.2" fill="none">
+                  <line x1="88" y1="110" x2="187" y2="110"/>
+                  <line x1="87" y1="132" x2="188" y2="132"/>
+                  <line x1="87" y1="154" x2="189" y2="154"/>
+                  <line x1="86" y1="176" x2="190" y2="176"/>
+                </g>
+                <!-- 4 Metal Kemer Tokası -->
+                <g fill="#e2e8f0" stroke="#111827" stroke-width="1.8">
+                  <rect x="129" y="103" width="16" height="12" rx="2.5"/>
+                  <rect x="129" y="125" width="16" height="12" rx="2.5"/>
+                  <rect x="129" y="147" width="16" height="12" rx="2.5"/>
+                  <rect x="129" y="169" width="16" height="12" rx="2.5"/>
+                </g>
+                <!-- Kalın Kürk Omuzluk -->
+                <path d="M64,86 Q138,114 210,86 Q198,64 138,68 Q78,64 64,86 Z" fill="url(#vk-fur)" stroke="#111827" stroke-width="2.8"/>
+
+                <!-- Kafa & Boynuzlu Miğfer -->
+                <g class="rig-head" data-px="138" data-py="72">
+                  <circle cx="138" cy="54" r="23" fill="#f3be9b" stroke="#111827" stroke-width="2.4"/>
+                  <!-- Gür Örgülü Kızıl-Kahve Sakal -->
+                  <path d="M114,54 Q112,92 138,98 Q164,92 162,54 Q150,64 138,61 Q126,64 114,54 Z" fill="url(#vk-beard)" stroke="#111827" stroke-width="2.4"/>
+                  <path d="M126,68 Q128,84 124,94 M150,68 Q148,84 152,94 M138,65 L138,96" stroke="#451a03" stroke-width="2" fill="none"/>
+                  <rect x="133" y="88" width="10" height="6" rx="1.5" fill="#fbbf24" stroke="#111827" stroke-width="1.4"/>
+                  <!-- Çelik Miğfer & Burun Koruyucu -->
+                  <path d="M112,48 Q112,18 138,18 Q164,18 164,48 Z" fill="url(#vk-steel)" stroke="#111827" stroke-width="2.6"/>
+                  <path d="M114,45 L162,45 L158,57 L143,57 L138,50 L133,57 L118,57 Z" fill="#334155" stroke="#111827" stroke-width="2.2"/>
+                  <circle cx="128" cy="51" r="2.6" fill="#ffffff"/>
+                  <circle cx="148" cy="51" r="2.6" fill="#ffffff"/>
+                  <!-- İki Boynuz -->
+                  <path d="M113,36 Q88,24 95,6 Q102,22 117,27 Z" fill="url(#vk-horn)" stroke="#111827" stroke-width="2.2"/>
+                  <path d="M163,36 Q188,24 181,6 Q174,22 159,27 Z" fill="url(#vk-horn)" stroke="#111827" stroke-width="2.2"/>
+                </g>
+
+                <!-- Ön Savaş Kolu + Dirsek + Ağır Viking Baltası -->
+                <g class="rig-arm-front" data-px="86" data-py="100">
+                  <path d="M76,94 Q58,120 65,146 L86,144 Q82,120 94,100 Z" fill="#e5d5c0" stroke="#111827" stroke-width="2.5"/>
+                  <g class="rig-forearm" data-px="76" data-py="142">
+                    <path d="M64,140 Q68,164 88,176 L102,162 Q86,150 84,138 Z" fill="#6b4222" stroke="#111827" stroke-width="2.5"/>
+                    <g class="rig-weapon" data-px="94" data-py="168">
+                      <!-- Balta Sapı -->
+                      <rect x="88" y="48" width="10" height="162" rx="4" transform="rotate(16 94 168)" fill="#5c3416" stroke="#111827" stroke-width="2.4"/>
+                      <!-- Çift Keskin Parlak Viking Baltası -->
+                      <path d="M104,34 Q138,52 162,30 L166,86 Q136,70 98,90 Q112,62 104,34 Z" fill="url(#vk-steel)" stroke="#111827" stroke-width="2.8"/>
+                      <path d="M161,31 Q150,58 165,85" fill="none" stroke="#ffffff" stroke-width="3.5"/>
+                      <!-- Rün İşareti -->
+                      <path d="M126,52 L126,68 M126,56 L134,50 M126,62 L134,68" stroke="#38bdf8" stroke-width="2" stroke-linecap="round"/>
+                      <!-- Yumruk -->
+                      <circle cx="94" cy="168" r="10" fill="#f3be9b" stroke="#111827" stroke-width="2.4"/>
+                    </g>
+                  </g>
+                </g>
+              </g>
+            </g>
+          </svg>
+        `
+      },
+      {
+        id: 'akinci',
+        name: 'Akıncı',
+        defaultHeroName: 'Batur Bey',
+        weapon: 'Osmanlı Yatağanı & Kalkan',
+        slashColor: '#fbbf24',
+        desc: 'Sarıklı miğferi, zincir zırhı ve altın işlemeli eğri yatağanıyla dumanı dağıtır.',
+        svg: `
+          <svg viewBox="0 0 280 330" class="w-full h-full overflow-visible">
+            <defs>
+              <linearGradient id="ak-gold" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#fef08a"/>
+                <stop offset="50%" stop-color="#eab308"/>
+                <stop offset="100%" stop-color="#854d0e"/>
+              </linearGradient>
+              <linearGradient id="ak-armor" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#9a6c46"/>
+                <stop offset="55%" stop-color="#6b4426"/>
+                <stop offset="100%" stop-color="#3b2210"/>
+              </linearGradient>
+              <linearGradient id="ak-crimson" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#dc2626"/>
+                <stop offset="100%" stop-color="#7f1d1d"/>
+              </linearGradient>
+            </defs>
+
+            <g class="rig-root" data-px="140" data-py="315">
+              <!-- Sol / Arka Bacak -->
+              <g class="rig-leg-l" data-px="110" data-py="192">
+                <path d="M96,194 L86,260 L82,306 L108,306 L116,256 L128,198 Z" fill="url(#ak-crimson)" stroke="#111827" stroke-width="2.6"/>
+                <path d="M80,266 Q98,260 112,268 L108,312 L76,312 Z" fill="#52311b" stroke="#111827" stroke-width="2.6"/>
+                <ellipse cx="96" cy="264" rx="18" ry="6.5" fill="#f1f5f9" stroke="#111827" stroke-width="2"/>
+              </g>
+
+              <!-- Sağ / Ön Bacak -->
+              <g class="rig-leg-r" data-px="158" data-py="192">
+                <path d="M146,196 L174,228 L176,290 L204,292 L202,220 L168,186 Z" fill="url(#ak-crimson)" stroke="#111827" stroke-width="2.6"/>
+                <path d="M172,248 Q188,242 206,250 L208,296 L172,294 Z" fill="#52311b" stroke="#111827" stroke-width="2.6"/>
+                <ellipse cx="189" cy="248" rx="18" ry="6.5" fill="#f1f5f9" stroke="#111827" stroke-width="2"/>
+              </g>
+
+              <!-- Gövde Grubu -->
+              <g class="rig-torso" data-px="134" data-py="188">
+                <!-- Arka Kol & Osmanlı Kalkanı -->
+                <g class="rig-arm-back" data-px="168" data-py="98">
+                  <circle cx="188" cy="152" r="50" fill="#7c5230" stroke="#111827" stroke-width="3"/>
+                  <circle cx="188" cy="152" r="44" fill="none" stroke="#e2e8f0" stroke-width="3.5"/>
+                  <circle cx="188" cy="152" r="33" fill="none" stroke="#fbbf24" stroke-width="2.4" stroke-dasharray="7 4"/>
+                  <circle cx="188" cy="152" r="12" fill="url(#ak-gold)" stroke="#111827" stroke-width="2.2"/>
+                </g>
+
+                <!-- Bronz-Kahve Kaslı Gövde Zırhı -->
+                <path d="M90,86 L174,88 L172,192 Q132,204 90,192 Z" fill="url(#ak-armor)" stroke="#111827" stroke-width="3"/>
+                <!-- Göğüs Kas Çizgileri -->
+                <path d="M104,126 Q132,134 160,126 M132,112 L132,162" stroke="#291507" stroke-width="2.4" fill="none"/>
+                <!-- Zincir Zırh Omuz Örtüsü -->
+                <path d="M94,72 Q134,98 170,74 L182,118 Q134,136 86,118 Z" fill="#cbd5e1" stroke="#111827" stroke-width="2.5"/>
+                <path d="M96,94 Q134,112 168,94 M92,106 Q134,124 174,106" stroke="#475569" stroke-width="2" stroke-dasharray="4 4" fill="none"/>
+                <!-- Altın İşlemeli Kemer & Hilal Tokası -->
+                <rect x="89" y="166" width="84" height="18" rx="4" fill="url(#ak-gold)" stroke="#111827" stroke-width="2.4"/>
+                <circle cx="132" cy="175" r="8" fill="#fef08a" stroke="#111827" stroke-width="1.8"/>
+
+                <!-- Kafa & Sarıklı Osmanlı Miğferi -->
+                <g class="rig-head" data-px="132" data-py="68">
+                  <circle cx="132" cy="48" r="21" fill="#e5a87e" stroke="#111827" stroke-width="2.4"/>
+                  <!-- Gür Kara Sakal & Bıyık -->
+                  <path d="M114,48 Q115,76 136,78 Q154,76 152,50 Q140,56 132,54 Z" fill="#1e293b" stroke="#111827" stroke-width="2.2"/>
+                  <circle cx="142" cy="45" r="2.4" fill="#111827"/>
+                  <!-- Sivri Çelik/Altın Miğfer -->
+                  <path d="M111,36 Q113,10 132,8 Q151,10 153,36 Z" fill="url(#ak-gold)" stroke="#111827" stroke-width="2.4"/>
+                  <polygon points="132,0 128,10 136,10" fill="#fef08a" stroke="#111827" stroke-width="1.5"/>
+                  <!-- Beyaz İpek Sarık -->
+                  <path d="M106,35 Q132,22 158,35 Q160,46 132,43 Q104,46 106,35 Z" fill="#ffffff" stroke="#111827" stroke-width="2.4"/>
+                  <path d="M114,32 Q132,40 150,32" stroke="#94a3b8" stroke-width="1.8" fill="none"/>
+                </g>
+
+                <!-- Ön Kılıç Kolu + Dirsek + Eğri Yatağan -->
+                <g class="rig-arm-front" data-px="88" data-py="96">
+                  <path d="M72,86 Q98,78 112,96 L104,136 L68,128 Z" fill="url(#ak-armor)" stroke="#111827" stroke-width="2.6"/>
+                  <g class="rig-forearm" data-px="86" data-py="134">
+                    <path d="M74,130 L72,178 L98,184 L100,136 Z" fill="#e5a87e" stroke="#111827" stroke-width="2.4"/>
+                    <rect x="70" y="152" width="28" height="32" rx="5" fill="#8c5c38" stroke="#111827" stroke-width="2.4"/>
+                    <g class="rig-weapon" data-px="96" data-py="180">
+                      <!-- Parlak Eğri Osmanlı Yatağanı -->
+                      <path d="M98,178 Q178,180 252,126 Q186,198 98,188 Z" fill="url(#ak-gold)" stroke="#111827" stroke-width="2.4"/>
+                      <path d="M100,180 Q178,182 248,129" fill="none" stroke="#ffffff" stroke-width="3"/>
+                      <rect x="93" y="168" width="7" height="26" rx="2.5" fill="#f59e0b" stroke="#111827" stroke-width="2"/>
+                    </g>
+                  </g>
+                </g>
+              </g>
+            </g>
+          </svg>
+        `
+      },
+      {
+        id: 'templar',
+        name: 'Tapınak Şövalyesi',
+        defaultHeroName: 'Sör Godfrey',
+        weapon: 'Geniş Kılıç & Kalkan',
+        slashColor: '#fb923c',
+        desc: 'Parlak çelik zırhı, kızıl haçlı pelerini ve geniş kılıcıyla dumanı yarar.',
+        svg: `
+          <svg viewBox="0 0 280 330" class="w-full h-full overflow-visible">
+            <defs>
+              <linearGradient id="tp-plate" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#ffffff"/>
+                <stop offset="45%" stop-color="#cbd5e1"/>
+                <stop offset="85%" stop-color="#64748b"/>
+                <stop offset="100%" stop-color="#334155"/>
+              </linearGradient>
+              <linearGradient id="tp-crimson" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#ef4444"/>
+                <stop offset="100%" stop-color="#991b1b"/>
+              </linearGradient>
+              <linearGradient id="tp-gold" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#fef08a"/>
+                <stop offset="100%" stop-color="#ca8a04"/>
+              </linearGradient>
+            </defs>
+
+            <g class="rig-root" data-px="140" data-py="315">
+              <!-- Sol / Arka Bacak -->
+              <g class="rig-leg-l" data-px="110" data-py="190">
+                <path d="M94,190 L80,252 L72,302 L102,302 L114,248 L126,192 Z" fill="#1e293b" stroke="#111827" stroke-width="2.6"/>
+                <polygon points="78,228 104,222 108,248 76,252" fill="url(#tp-plate)" stroke="#111827" stroke-width="2.2"/>
+                <path d="M68,292 L104,292 L106,314 L60,314 Z" fill="url(#tp-plate)" stroke="#111827" stroke-width="2.4"/>
+              </g>
+
+              <!-- Sağ / Ön Bacak -->
+              <g class="rig-leg-r" data-px="164" data-py="190">
+                <path d="M148,192 L166,252 L176,302 L206,302 L194,248 L176,190 Z" fill="#1e293b" stroke="#111827" stroke-width="2.6"/>
+                <polygon points="164,222 190,228 194,252 162,248" fill="url(#tp-plate)" stroke="#111827" stroke-width="2.2"/>
+                <path d="M174,292 L208,292 L216,314 L172,314 Z" fill="url(#tp-plate)" stroke="#111827" stroke-width="2.4"/>
+              </g>
+
+              <!-- Gövde Grubu -->
+              <g class="rig-torso" data-px="136" data-py="186">
+                <!-- Arka Kol & Haçlı Uçurtma Kalkan -->
+                <g class="rig-arm-back" data-px="186" data-py="104">
+                  <path d="M186,106 L204,156 L180,164 L168,114 Z" fill="#64748b" stroke="#111827" stroke-width="2.4"/>
+                  <path d="M188,92 L236,104 L228,182 Q206,208 184,182 Z" fill="#f8fafc" stroke="#111827" stroke-width="3"/>
+                  <path d="M192,97 L231,107 L224,179 Q206,201 188,179 Z" fill="none" stroke="url(#tp-gold)" stroke-width="3"/>
+                  <path d="M206,112 L214,112 L214,174 L206,174 Z M192,134 L228,134 L228,142 L192,142 Z" fill="#dc2626"/>
+                </g>
+
+                <!-- Beyaz & Kızıl Haçlı Zırh Eteği -->
+                <path d="M110,180 L162,180 L158,262 L136,246 L114,262 Z" fill="#f8fafc" stroke="#111827" stroke-width="2.6"/>
+                <path d="M132,182 L140,182 L140,244 L132,244 Z M118,206 L154,206 L154,214 L118,214 Z" fill="#dc2626"/>
+
+                <!-- Çelik Göğüs Zırhı & Haç Amblemi -->
+                <path d="M84,86 L188,86 L178,182 L94,182 Z" fill="url(#tp-plate)" stroke="#111827" stroke-width="3"/>
+                <path d="M131,100 L141,100 L141,158 L131,158 Z M112,122 L160,122 L160,132 L112,132 Z" fill="url(#tp-crimson)"/>
+                <!-- Altın Kemer -->
+                <rect x="90" y="166" width="92" height="16" rx="4" fill="#78350f" stroke="#111827" stroke-width="2.2"/>
+                <circle cx="136" cy="174" r="10" fill="url(#tp-gold)" stroke="#111827" stroke-width="2.2"/>
+
+                <!-- Altın Şeritli Çelik Omuzluklar -->
+                <path d="M58,98 Q74,68 112,76 L110,114 Q74,118 58,98 Z" fill="url(#tp-plate)" stroke="#111827" stroke-width="2.8"/>
+                <path d="M64,96 Q82,76 108,82" stroke="#eab308" stroke-width="3.5" fill="none"/>
+                <path d="M214,98 Q198,68 160,76 L162,114 Q198,118 214,98 Z" fill="url(#tp-plate)" stroke="#111827" stroke-width="2.8"/>
+                <path d="M208,96 Q190,76 164,82" stroke="#eab308" stroke-width="3.5" fill="none"/>
+
+                <!-- Kafa & Açık Siperlikli Şövalye Miğferi -->
+                <g class="rig-head" data-px="136" data-py="72">
+                  <circle cx="136" cy="54" r="21" fill="#f6be96" stroke="#111827" stroke-width="2.4"/>
+                  <!-- Çelik Miğfer & Altın Taç Şeridi -->
+                  <path d="M113,48 Q113,20 136,20 Q159,20 159,48 L155,66 L148,66 L148,48 L124,48 L124,66 L117,66 Z" fill="url(#tp-plate)" stroke="#111827" stroke-width="2.5"/>
+                  <rect x="115" y="40" width="42" height="5" fill="url(#tp-gold)"/>
+                  <circle cx="129" cy="53" r="2.3" fill="#111827"/>
+                  <circle cx="143" cy="53" r="2.3" fill="#111827"/>
+                </g>
+
+                <!-- Ön Kılıç Kolu + Dirsek + Geniş Şövalye Kılıcı -->
+                <g class="rig-arm-front" data-px="78" data-py="104">
+                  <path d="M62,106 L58,142 L84,144 L88,108 Z" fill="#64748b" stroke="#111827" stroke-width="2.5"/>
+                  <g class="rig-forearm" data-px="72" data-py="142">
+                    <path d="M58,140 L56,168 L84,172 L86,142 Z" fill="#94a3b8" stroke="#111827" stroke-width="2.5"/>
+                    <g class="rig-weapon" data-px="78" data-py="168">
+                      <!-- Parlak Geniş Çelik Kılıç -->
+                      <polygon points="74,166 232,42 242,52 84,176" fill="url(#tp-plate)" stroke="#111827" stroke-width="2.6"/>
+                      <line x1="80" y1="171" x2="236" y2="47" stroke="#ffffff" stroke-width="2.8"/>
+                      <rect x="60" y="156" width="36" height="9" rx="3.5" transform="rotate(-38 78 160)" fill="url(#tp-gold)" stroke="#111827" stroke-width="2.2"/>
+                      <rect x="46" y="176" width="26" height="9" rx="3.5" transform="rotate(-38 59 180)" fill="#451a03" stroke="#111827" stroke-width="2"/>
+                    </g>
+                  </g>
+                </g>
+              </g>
+            </g>
+          </svg>
+        `
+      },
+      {
+        id: 'samurai',
+        name: 'Samuray',
+        defaultHeroName: 'Kenshin',
+        weapon: 'Parlak Katana',
+        slashColor: '#f43f5e',
+        desc: 'Rüzgârda savrulan saçları, kızıl kimonosu ve keskin katanasıyla bağımlılığı ikiye böler.',
+        svg: `
+          <svg viewBox="0 0 280 330" class="w-full h-full overflow-visible">
+            <defs>
+              <linearGradient id="sm-crimson" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#ef4444"/>
+                <stop offset="60%" stop-color="#b91c1c"/>
+                <stop offset="100%" stop-color="#7f1d1d"/>
+              </linearGradient>
+              <linearGradient id="sm-blade" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#e2e8f0"/>
+                <stop offset="50%" stop-color="#ffffff"/>
+                <stop offset="100%" stop-color="#94a3b8"/>
+              </linearGradient>
+            </defs>
+
+            <g class="rig-root" data-px="130" data-py="315">
+              <!-- Sol / Arka Bacak (Hakama & Geta) -->
+              <g class="rig-leg-l" data-px="100" data-py="178">
+                <path d="M78,176 L54,268 L98,274 L120,188 Z" fill="#111827" stroke="#000000" stroke-width="2.8"/>
+                <path d="M74,205 L66,262 M92,202 L86,266" stroke="#334155" stroke-width="2"/>
+                <path d="M58,268 L48,300 L70,302 L82,270 Z" fill="#fed7aa" stroke="#111827" stroke-width="2"/>
+                <rect x="34" y="300" width="42" height="9" rx="2.5" fill="#9a3412" stroke="#111827" stroke-width="2"/>
+              </g>
+
+              <!-- Sağ / Ön Bacak -->
+              <g class="rig-leg-r" data-px="144" data-py="178">
+                <path d="M124,188 L134,280 L174,270 L158,176 Z" fill="#111827" stroke="#000000" stroke-width="2.8"/>
+                <path d="M152,270 L172,300 L192,296 L170,266 Z" fill="#fed7aa" stroke="#111827" stroke-width="2"/>
+                <rect x="166" y="298" width="42" height="9" rx="2.5" transform="rotate(-12 187 302)" fill="#9a3412" stroke="#111827" stroke-width="2"/>
+              </g>
+
+              <!-- Gövde Grubu -->
+              <g class="rig-torso" data-px="120" data-py="176">
+                <!-- Rüzgârda Uçuşan Kızıl Kimono Eteği -->
+                <path d="M146,166 Q202,168 242,212 Q204,248 150,240 Z" fill="url(#sm-crimson)" stroke="#111827" stroke-width="2.8"/>
+                <path d="M164,186 Q198,196 226,214 M158,208 Q186,216 206,228" stroke="#450a0a" stroke-width="2.6" fill="none"/>
+
+                <!-- Üst Kimono & Siyah Gölgeler -->
+                <path d="M82,86 L156,86 L162,178 L76,178 Z" fill="url(#sm-crimson)" stroke="#111827" stroke-width="2.8"/>
+                <path d="M104,86 L124,128 L142,86 L156,86 L132,174 L88,174 Z" fill="#111827"/>
+                <!-- Obi Kuşağı -->
+                <rect x="78" y="156" width="82" height="22" rx="3" fill="#0f172a" stroke="#111827" stroke-width="2.4"/>
+                <line x1="80" y1="164" x2="158" y2="164" stroke="#ef4444" stroke-width="2"/>
+
+                <!-- Arka Destek Eli -->
+                <g class="rig-arm-back" data-px="146" data-py="90">
+                  <circle cx="114" cy="86" r="8" fill="#fed7aa" stroke="#111827" stroke-width="2"/>
+                </g>
+
+                <!-- Anime Kafa & Kızıl Göz Aksanı -->
+                <g class="rig-head" data-px="120" data-py="72">
+                  <circle cx="120" cy="54" r="20" fill="#fed7aa" stroke="#111827" stroke-width="2.2"/>
+                  <!-- Savrulan Siyah Anime Saçları -->
+                  <path d="M92,56 Q88,20 122,20 Q152,20 146,56 Q136,38 120,42 Q104,38 92,56 Z" fill="#0f172a" stroke="#000000" stroke-width="2"/>
+                  <path d="M96,32 L82,24 L94,40 M144,30 L158,22 L148,38" fill="#0f172a"/>
+                  <!-- Kızıl Gölge & Keskin Göz -->
+                  <path d="M100,48 Q110,44 117,53 Q108,60 100,53 Z" fill="#ef4444"/>
+                  <circle cx="129" cy="51" r="2.5" fill="#111827"/>
+                  <line x1="123" y1="47" x2="135" y2="49" stroke="#111827" stroke-width="2"/>
+                </g>
+
+                <!-- Ön Kılıç Kolu + Dirsek + Uzun Parlak Katana -->
+                <g class="rig-arm-front" data-px="84" data-py="90">
+                  <path d="M66,84 L92,82 L96,108 L64,112 Z" fill="url(#sm-crimson)" stroke="#111827" stroke-width="2.5"/>
+                  <g class="rig-forearm" data-px="80" data-py="104">
+                    <path d="M70,100 L110,76 L116,96 L76,114 Z" fill="url(#sm-crimson)" stroke="#111827" stroke-width="2.5"/>
+                    <g class="rig-weapon" data-px="114" data-py="84">
+                      <!-- Katana Kabzası (Tsuka) & Yuvarlak Tsuba -->
+                      <rect x="82" y="77" width="36" height="9" rx="3" transform="rotate(8 100 81)" fill="#1e293b" stroke="#111827" stroke-width="2"/>
+                      <ellipse cx="120" cy="84" rx="4.5" ry="12" transform="rotate(8 120 84)" fill="#eab308" stroke="#111827" stroke-width="2"/>
+                      <!-- Uzun Parlak Katana Namlusu -->
+                      <path d="M124,79 Q198,90 268,126 L261,133 Q192,99 123,88 Z" fill="url(#sm-blade)" stroke="#111827" stroke-width="2.4"/>
+                    </g>
+                  </g>
+                </g>
+              </g>
+            </g>
+          </svg>
+        `
+      },
+      {
+        id: 'gladiator',
+        name: 'Gladyatör',
+        defaultHeroName: 'Maximus',
+        weapon: 'Zincirli Dikenli Gürz',
+        slashColor: '#a855f7',
+        desc: 'Sorguçlu bronz miğferi ve zincirli dikenli gürzüyle bağımlılık zincirlerini kırar.',
+        svg: `
+          <svg viewBox="0 0 280 330" class="w-full h-full overflow-visible">
+            <defs>
+              <linearGradient id="gl-skin" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#f5c3a4"/>
+                <stop offset="60%" stop-color="#d89b74"/>
+                <stop offset="100%" stop-color="#a86d48"/>
+              </linearGradient>
+              <linearGradient id="gl-red" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#ef4444"/>
+                <stop offset="100%" stop-color="#991b1b"/>
+              </linearGradient>
+              <linearGradient id="gl-bronze" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#fde047"/>
+                <stop offset="50%" stop-color="#ca8a04"/>
+                <stop offset="100%" stop-color="#713f12"/>
+              </linearGradient>
+            </defs>
+
+            <g class="rig-root" data-px="140" data-py="315">
+              <!-- Sol / Arka Bacak -->
+              <g class="rig-leg-l" data-px="108" data-py="198">
+                <path d="M92,198 L78,258 L70,304 L98,304 L110,256 L122,200 Z" fill="url(#gl-skin)" stroke="#111827" stroke-width="2.5"/>
+                <path d="M66,262 L100,262 L102,312 L58,312 Z" fill="#6b4b3c" stroke="#111827" stroke-width="2.6"/>
+              </g>
+
+              <!-- Sağ / Ön Bacak -->
+              <g class="rig-leg-r" data-px="162" data-py="198">
+                <path d="M146,200 L166,258 L176,304 L206,304 L194,254 L172,198 Z" fill="url(#gl-skin)" stroke="#111827" stroke-width="2.5"/>
+                <path d="M170,262 L206,262 L216,312 L168,312 Z" fill="#6b4b3c" stroke="#111827" stroke-width="2.6"/>
+              </g>
+
+              <!-- Gövde Grubu -->
+              <g class="rig-torso" data-px="132" data-py="188">
+                <!-- Kızıl Gladyatör Pelerini -->
+                <path d="M88,80 Q58,148 66,234 L96,224 Q88,152 108,86 Z" fill="url(#gl-red)" stroke="#111827" stroke-width="2.8"/>
+
+                <!-- Arka Kol -->
+                <g class="rig-arm-back" data-px="86" data-py="94">
+                  <path d="M78,94 L64,152 L84,156 L94,100 Z" fill="url(#gl-skin)" stroke="#111827" stroke-width="2.4"/>
+                  <rect x="64" y="132" width="22" height="22" rx="4" fill="#f1f5f9" stroke="#111827" stroke-width="2"/>
+                </g>
+
+                <!-- Kızıl Gladyatör Eteği & Bronz Kemer -->
+                <path d="M90,166 L170,166 L180,216 L84,218 Z" fill="url(#gl-red)" stroke="#111827" stroke-width="2.8"/>
+                <path d="M112,168 L110,216 M134,168 L134,216 M156,168 L158,216" stroke="#450a0a" stroke-width="2.4"/>
+                <rect x="90" y="154" width="80" height="18" rx="4" fill="url(#gl-bronze)" stroke="#111827" stroke-width="2.4"/>
+
+                <!-- Kaslı Gövde -->
+                <path d="M88,84 L168,84 L166,156 L94,156 Z" fill="url(#gl-skin)" stroke="#111827" stroke-width="2.8"/>
+                <path d="M102,114 Q128,122 156,114 M128,96 L128,152 M112,134 L144,134" stroke="#7c4a2d" stroke-width="2.2" fill="none"/>
+
+                <!-- Kafa & Kızıl Sorguçlu Miğfer -->
+                <g class="rig-head" data-px="130" data-py="72">
+                  <path d="M106,34 Q112,8 148,14 L154,34 Z" fill="url(#gl-red)" stroke="#111827" stroke-width="2.4"/>
+                  <path d="M108,56 Q108,28 132,28 Q156,28 156,56 L148,74 L116,74 Z" fill="#94a3b8" stroke="#111827" stroke-width="2.8"/>
+                  <path d="M130,44 L154,44 L148,70 L132,66 Z" fill="url(#gl-bronze)" stroke="#111827" stroke-width="2"/>
+                </g>
+
+                <!-- Ön Gürz Kolu + Dirsek + Zincirli Dikenli Topuz -->
+                <g class="rig-arm-front" data-px="154" data-py="96">
+                  <path d="M144,94 L162,132 L180,126 L162,90 Z" fill="url(#gl-skin)" stroke="#111827" stroke-width="2.5"/>
+                  <g class="rig-forearm" data-px="168" data-py="128">
+                    <path d="M158,126 L164,158 L184,154 L178,124 Z" fill="url(#gl-skin)" stroke="#111827" stroke-width="2.5"/>
+                    <rect x="156" y="136" width="26" height="24" rx="4" transform="rotate(-15 169 148)" fill="#f8fafc" stroke="#111827" stroke-width="2.2"/>
+                    <g class="rig-weapon" data-px="172" data-py="156">
+                      <!-- Ahşap Gürz Sapı -->
+                      <rect x="140" y="154" width="98" height="9" rx="3.5" transform="rotate(8 189 158)" fill="#78350f" stroke="#111827" stroke-width="2.4"/>
+                      <!-- Zincir & Dikenli Demir Topuz -->
+                      <g class="rig-flail-chain" data-px="234" data-py="166">
+                        <line x1="234" y1="166" x2="234" y2="238" stroke="#1e293b" stroke-width="5" stroke-dasharray="7 4"/>
+                        <circle cx="234" cy="254" r="22" fill="#cbd5e1" stroke="#111827" stroke-width="2.8"/>
+                        <polygon points="234,220 228,234 240,234" fill="#ffffff" stroke="#111827" stroke-width="2"/>
+                        <polygon points="234,288 228,274 240,274" fill="#ffffff" stroke="#111827" stroke-width="2"/>
+                        <polygon points="200,254 214,248 214,260" fill="#ffffff" stroke="#111827" stroke-width="2"/>
+                        <polygon points="268,254 254,248 254,260" fill="#ffffff" stroke="#111827" stroke-width="2"/>
+                        <polygon points="212,232 223,238 217,246" fill="#ffffff" stroke="#111827" stroke-width="2"/>
+                        <polygon points="256,232 245,238 251,246" fill="#ffffff" stroke="#111827" stroke-width="2"/>
+                      </g>
+                    </g>
+                  </g>
+                </g>
+              </g>
+            </g>
+          </svg>
+        `
+      }
+    ];
+
+    /**
+     * SİGARA CANAVARI — YÜKSEK DETAYLI CEL-SHADED KARİKATÜR & RİG
+     */
+    const CIGARETTE_MONSTER_SVG = `
+      <svg viewBox="0 0 280 330" class="w-full h-full overflow-visible">
+        <defs>
+          <linearGradient id="cm-body" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#d1d5db"/>
+            <stop offset="50%" stop-color="#9ca3af"/>
+            <stop offset="100%" stop-color="#4b5563"/>
+          </linearGradient>
+          <radialGradient id="cm-eye" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#fef9c3"/>
+            <stop offset="55%" stop-color="#facc15"/>
+            <stop offset="100%" stop-color="#ca8a04"/>
+          </radialGradient>
+          <linearGradient id="cm-ember" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#ef4444"/>
+            <stop offset="50%" stop-color="#f97316"/>
+            <stop offset="100%" stop-color="#dc2626"/>
+          </linearGradient>
+        </defs>
+
+        <g class="rig-root" data-px="140" data-py="315">
+          <!-- Sol Pençeli Bacak -->
+          <g class="rig-leg-l" data-px="112" data-py="228">
+            <path d="M112,230 L90,252 L92,290" stroke="#111827" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M92,288 L50,294 L76,298 L54,314 L84,302 L76,320 L96,302 L108,316 L100,292 Z" fill="#4b5563" stroke="#111827" stroke-width="2.6"/>
+          </g>
+
+          <!-- Sağ Pençeli Bacak -->
+          <g class="rig-leg-r" data-px="168" data-py="228">
+            <path d="M168,230 L190,252 L188,290" stroke="#111827" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M188,288 L230,294 L204,298 L226,314 L196,302 L204,320 L184,302 L172,316 L180,292 Z" fill="#4b5563" stroke="#111827" stroke-width="2.6"/>
+          </g>
+
+          <!-- Gövde Grubu -->
+          <g class="rig-torso" data-px="140" data-py="228">
+            <!-- Yükselen Gri Duman Halkaları -->
+            <circle cx="88" cy="24" r="14" fill="rgba(148, 163, 184, 0.42)"/>
+            <circle cx="192" cy="18" r="17" fill="rgba(148, 163, 184, 0.36)"/>
+            <circle cx="140" cy="12" r="12" fill="rgba(203, 213, 225, 0.4)"/>
+
+            <!-- Arka Sağ Kol & Uzun Sarı Pençe -->
+            <g class="rig-arm-back" data-px="184" data-py="178">
+              <path d="M184,178 Q212,182 224,162 L232,140" stroke="#111827" stroke-width="5.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M232,142 L266,132 L240,134 L262,100 L236,128 L242,78 L228,126 L218,92 L226,138 Z" fill="#fef08a" stroke="#111827" stroke-width="2.6" stroke-linejoin="round"/>
+            </g>
+
+            <!-- Kül Rengi Pürüzlü Silindirik Canavar Gövdesi -->
+            <path d="M86,52 Q115,40 142,45 Q168,40 192,50 L186,128 L178,180 L172,228 Q140,242 110,228 L102,180 L92,126 Z" fill="url(#cm-body)" stroke="#111827" stroke-width="4" stroke-linejoin="round"/>
+            <!-- Sağ Taraf Cel-Shade Gölge -->
+            <path d="M156,46 L190,51 L184,128 L170,226 L146,232 L156,128 Z" fill="rgba(17, 24, 39, 0.22)"/>
+            <!-- Tepede Yanan Kor & Kül Tacı -->
+            <path d="M92,52 Q140,62 188,50" fill="none" stroke="url(#cm-ember)" stroke-width="5" stroke-linecap="round"/>
+            <circle cx="114" cy="51" r="3.5" fill="#fb923c"/>
+            <circle cx="158" cy="49" r="4" fill="#ef4444"/>
+
+            <!-- Yüz, Kalın Kaşlar, Sarı Gözler & Keskin Dişler -->
+            <g class="rig-head" data-px="140" data-py="162">
+              <path d="M94,144 Q140,152 184,144 L180,178 Q140,186 100,178 Z" fill="#111827"/>
+              <ellipse cx="122" cy="162" rx="17" ry="11.5" fill="url(#cm-eye)" stroke="#000000" stroke-width="2.5"/>
+              <circle cx="125" cy="162" r="3.8" fill="#090d16"/>
+              <ellipse cx="158" cy="162" rx="17" ry="11.5" fill="url(#cm-eye)" stroke="#000000" stroke-width="2.5"/>
+              <circle cx="155" cy="162" r="3.8" fill="#090d16"/>
+              <!-- Kalın Çatık Siyah Kaşlar -->
+              <path d="M88,132 L140,152 L138,163 L86,148 Z" fill="#090d16"/>
+              <path d="M192,132 L140,152 L142,163 L194,148 Z" fill="#090d16"/>
+              <path d="M132,124 L136,144 M144,120 L142,144 M153,126 L147,144" stroke="#111827" stroke-width="2.8" stroke-linecap="round"/>
+              <!-- Keskin Dişli Sırıtış -->
+              <path d="M110,194 Q140,184 168,194 Q164,220 140,220 Q114,220 110,194 Z" fill="#090d16" stroke="#111827" stroke-width="2.8"/>
+              <polygon points="114,194 121,207 128,193" fill="#ffffff"/>
+              <polygon points="131,192 138,208 145,192" fill="#ffffff"/>
+              <polygon points="148,193 155,207 163,194" fill="#ffffff"/>
+              <polygon points="120,217 127,204 134,218" fill="#e2e8f0"/>
+              <polygon points="142,218 149,204 157,217" fill="#e2e8f0"/>
+            </g>
+
+            <!-- Ön Sol Saldırı Kolu + Dirsek + Uzun Sarı Pençe -->
+            <g class="rig-arm-front" data-px="96" data-py="178">
+              <path d="M96,178 Q68,182 56,162" stroke="#111827" stroke-width="5.5" fill="none" stroke-linecap="round"/>
+              <g class="rig-forearm" data-px="56" data-py="162">
+                <path d="M56,162 L48,140" stroke="#111827" stroke-width="5.5" fill="none" stroke-linecap="round"/>
+                <g class="rig-weapon" data-px="48" data-py="140">
+                  <path d="M48,142 L14,132 L40,134 L18,100 L44,128 L38,78 L52,126 L62,92 L54,138 Z" fill="#fef08a" stroke="#111827" stroke-width="2.6" stroke-linejoin="round"/>
+                </g>
+              </g>
+            </g>
+          </g>
+        </g>
+      </svg>
+    `;
+
+    /**
+     * =========================================================================
+     * 3. GÜNEŞLİ & AYDINLIK 5 ŞEHİR HARİTASI (/img/sehir.jpg + SVG FALLBACK)
+     * =========================================================================
+     */
+    const CITY_MAPS = [
+      {
+        id: 'istanbul',
+        name: 'İstanbul',
+        imgPath: '/img/istanbul.jpg',
+        subtitle: 'Boğaziçi & Kız Kulesi',
+        svg: `
+          <svg viewBox="0 0 1200 600" preserveAspectRatio="xMidYMid slice" class="w-full h-full">
+            <defs>
+              <linearGradient id="ist-sky" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#38bdf8"/>
+                <stop offset="55%" stop-color="#bae6fd"/>
+                <stop offset="100%" stop-color="#fef9c3"/>
+              </linearGradient>
+              <linearGradient id="ist-sea" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#0ea5e9"/>
+                <stop offset="100%" stop-color="#0284c7"/>
+              </linearGradient>
+            </defs>
+            <rect width="1200" height="600" fill="url(#ist-sky)"/>
+            <circle cx="960" cy="110" r="56" fill="#fef08a" opacity="0.95"/>
+            <g fill="#ffffff" opacity="0.85">
+              <ellipse cx="220" cy="105" rx="75" ry="24"/><ellipse cx="265" cy="98" rx="55" ry="22"/>
+              <ellipse cx="720" cy="92" rx="85" ry="24"/><ellipse cx="775" cy="86" rx="60" ry="20"/>
+            </g>
+            <path d="M0,390 L80,390 Q140,320 200,390 L260,390 Q320,305 380,390 L1200,390 L1200,415 L0,415 Z" fill="#64748b"/>
+            <rect x="65" y="295" width="8" height="95" fill="#475569"/><polygon points="69,275 63,295 75,295" fill="#334155"/>
+            <rect x="215" y="285" width="9" height="105" fill="#475569"/><polygon points="219.5,262 213,285 226,285" fill="#334155"/>
+            <rect x="395" y="290" width="8" height="100" fill="#475569"/><polygon points="399,268 393,290 405,290" fill="#334155"/>
+            <rect x="760" y="250" width="14" height="145" fill="#e2e8f0"/>
+            <rect x="1040" y="250" width="14" height="145" fill="#e2e8f0"/>
+            <path d="M640,340 Q767,255 767,255 Q905,365 1047,255 Q1130,310 1200,335" fill="none" stroke="#94a3b8" stroke-width="4"/>
+            <line x1="630" y1="342" x2="1200" y2="342" stroke="#64748b" stroke-width="5"/>
+            <rect y="390" width="1200" height="210" fill="url(#ist-sea)"/>
+            <rect x="530" y="388" width="95" height="18" rx="3" fill="#f1f5f9"/>
+            <rect x="558" y="345" width="38" height="45" fill="#ffffff" stroke="#94a3b8"/>
+            <polygon points="577,315 554,345 600,345" fill="#dc2626"/>
+            <rect x="574" y="298" width="6" height="18" fill="#475569"/>
+            <ellipse cx="620" cy="455" rx="160" ry="10" fill="#bae6fd" opacity="0.5"/>
+            <ellipse cx="420" cy="515" rx="220" ry="12" fill="#bae6fd" opacity="0.4"/>
+          </svg>
+        `
+      },
+      {
+        id: 'ankara',
+        name: 'Ankara',
+        imgPath: '/img/ankara.jpg',
+        subtitle: 'Anıtkabir & Atakule',
+        svg: `
+          <svg viewBox="0 0 1200 600" preserveAspectRatio="xMidYMid slice" class="w-full h-full">
+            <defs>
+              <linearGradient id="ank-sky" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#0ea5e9"/>
+                <stop offset="60%" stop-color="#bae6fd"/>
+                <stop offset="100%" stop-color="#fef3c7"/>
+              </linearGradient>
+            </defs>
+            <rect width="1200" height="600" fill="url(#ank-sky)"/>
+            <circle cx="180" cy="110" r="52" fill="#fef08a" opacity="0.95"/>
+            <path d="M0,400 Q300,320 620,385 Q920,330 1200,375 L1200,600 L0,600 Z" fill="#86efac"/>
+            <path d="M0,445 Q450,395 850,435 Q1050,415 1200,440 L1200,600 L0,600 Z" fill="#4ade80"/>
+            <rect x="240" y="365" width="260" height="22" fill="#e7e5e4"/>
+            <rect x="265" y="310" width="210" height="55" fill="#fafaf9" stroke="#a8a29e"/>
+            <rect x="255" y="296" width="230" height="16" fill="#e7e5e4"/>
+            <g fill="#a8a29e">
+              <rect x="280" y="312" width="12" height="53"/><rect x="306" y="312" width="12" height="53"/>
+              <rect x="332" y="312" width="12" height="53"/><rect x="358" y="312" width="12" height="53"/>
+              <rect x="384" y="312" width="12" height="53"/><rect x="410" y="312" width="12" height="53"/>
+              <rect x="436" y="312" width="12" height="53"/>
+            </g>
+            <rect x="885" y="210" width="18" height="220" fill="#f1f5f9"/>
+            <ellipse cx="894" cy="215" rx="44" ry="14" fill="#cbd5e1"/>
+            <circle cx="894" cy="196" r="18" fill="#f59e0b"/>
+            <rect x="892" y="145" width="4" height="36" fill="#64748b"/>
+          </svg>
+        `
+      },
+      {
+        id: 'izmir',
+        name: 'İzmir',
+        imgPath: '/img/izmir.jpg',
+        subtitle: 'Saat Kulesi & Kordon',
+        svg: `
+          <svg viewBox="0 0 1200 600" preserveAspectRatio="xMidYMid slice" class="w-full h-full">
+            <defs>
+              <linearGradient id="izm-sky" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#0ea5e9"/>
+                <stop offset="60%" stop-color="#bae6fd"/>
+                <stop offset="100%" stop-color="#fef08a"/>
+              </linearGradient>
+            </defs>
+            <rect width="1200" height="600" fill="url(#izm-sky)"/>
+            <circle cx="260" cy="130" r="64" fill="#fde047" opacity="0.95"/>
+            <rect y="395" width="1200" height="65" fill="#06b6d4"/>
+            <rect y="450" width="1200" height="150" fill="#f1f5f9"/>
+            <polygon points="550,450 650,450 635,412 565,412" fill="#cbd5e1"/>
+            <rect x="576" y="280" width="48" height="132" fill="#ffffff" stroke="#94a3b8"/>
+            <rect x="582" y="235" width="36" height="45" fill="#e2e8f0"/>
+            <circle cx="600" cy="256" r="12" fill="#fef08a" stroke="#475569" stroke-width="2"/>
+            <polygon points="600,195 580,235 620,235" fill="#0284c7"/>
+            <g stroke="#78350f" stroke-width="6" fill="none">
+              <path d="M160,450 Q170,370 155,320"/>
+              <path d="M1010,450 Q1000,370 1015,320"/>
+            </g>
+            <path d="M155,320 Q120,310 105,335 M155,320 Q190,310 205,335 M155,320 Q155,285 135,295" stroke="#16a34a" stroke-width="6" fill="none"/>
+            <path d="M1015,320 Q980,310 965,335 M1015,320 Q1050,310 1065,335 M1015,320 Q1015,285 995,295" stroke="#16a34a" stroke-width="6" fill="none"/>
+          </svg>
+        `
+      },
+      {
+        id: 'bursa',
+        name: 'Bursa',
+        imgPath: '/img/bursa.jpg',
+        subtitle: 'Uludağ & Ulu Camii',
+        svg: `
+          <svg viewBox="0 0 1200 600" preserveAspectRatio="xMidYMid slice" class="w-full h-full">
+            <defs>
+              <linearGradient id="brs-sky" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#38bdf8"/>
+                <stop offset="65%" stop-color="#bae6fd"/>
+                <stop offset="100%" stop-color="#dcfce7"/>
+              </linearGradient>
+            </defs>
+            <rect width="1200" height="600" fill="url(#brs-sky)"/>
+            <polygon points="0,460 360,165 680,355 940,205 1200,450 1200,600 0,600" fill="#64748b"/>
+            <polygon points="360,165 295,222 330,218 360,235 390,215 425,222" fill="#ffffff"/>
+            <polygon points="940,205 885,255 920,250 940,266 968,248 995,256" fill="#ffffff"/>
+            <path d="M0,435 Q600,385 1200,435 L1200,600 L0,600 Z" fill="#22c55e"/>
+            <path d="M0,475 Q600,445 1200,475 L1200,600 L0,600 Z" fill="#4ade80"/>
+            <rect x="430" y="395" width="340" height="55" fill="#fafaf9" stroke="#a8a29e"/>
+            <path d="M445,395 Q475,360 505,395 Q535,360 565,395 Q595,360 625,395 Q655,360 685,395 Q715,360 745,395" fill="#cbd5e1"/>
+            <rect x="422" y="295" width="10" height="155" fill="#e7e5e4"/><polygon points="427,270 420,295 434,295" fill="#0d9488"/>
+            <rect x="768" y="295" width="10" height="155" fill="#e7e5e4"/><polygon points="773,270 766,295 780,295" fill="#0d9488"/>
+          </svg>
+        `
+      },
+      {
+        id: 'adana',
+        name: 'Adana',
+        imgPath: '/img/adana.jpg',
+        subtitle: 'Taşköprü & Sabancı Camii',
+        svg: `
+          <svg viewBox="0 0 1200 600" preserveAspectRatio="xMidYMid slice" class="w-full h-full">
+            <defs>
+              <linearGradient id="adn-sky" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#38bdf8"/>
+                <stop offset="55%" stop-color="#fde68a"/>
+                <stop offset="100%" stop-color="#fed7aa"/>
+              </linearGradient>
+            </defs>
+            <rect width="1200" height="600" fill="url(#adn-sky)"/>
+            <circle cx="840" cy="145" r="64" fill="#fef08a" opacity="0.95"/>
+            <path d="M680,385 Q770,290 860,385 Z" fill="#ffffff" stroke="#cbd5e1"/>
+            <rect x="645" y="255" width="9" height="135" fill="#ffffff"/><polygon points="649.5,232 643,255 656,255" fill="#d97706"/>
+            <rect x="885" y="255" width="9" height="135" fill="#ffffff"/><polygon points="889.5,232 883,255 896,255" fill="#d97706"/>
+            <rect y="415" width="1200" height="185" fill="#0ea5e9"/>
+            <rect y="475" width="1200" height="125" fill="#38bdf8"/>
+            <rect x="0" y="382" width="1200" height="36" fill="#e7e5e4"/>
+            <g fill="#0ea5e9">
+              <path d="M80,418 A45,32 0 0,1 170,418 Z"/>
+              <path d="M230,418 A45,32 0 0,1 320,418 Z"/>
+              <path d="M380,418 A45,32 0 0,1 470,418 Z"/>
+              <path d="M530,418 A45,32 0 0,1 620,418 Z"/>
+              <path d="M680,418 A45,32 0 0,1 770,418 Z"/>
+              <path d="M830,418 A45,32 0 0,1 920,418 Z"/>
+              <path d="M980,418 A45,32 0 0,1 1070,418 Z"/>
+            </g>
+          </svg>
+        `
+      }
+    ];
+
+    /**
+     * =========================================================================
+     * 4. WEB AUDIO API GERÇEKÇİ SES EFEKTLERİ SENTEZLEYİCİSİ
+     * =========================================================================
+     */
+    class SoundFX {
+      constructor() {
+        this.ctx = null;
+        this.enabled = true;
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (AudioCtx) this.ctx = new AudioCtx();
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      playSelect() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(520, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(780, this.ctx.currentTime + 0.08);
+        gain.gain.setValueAtTime(0.12, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.09);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.09);
+      }
+
+      playTypeBlip() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(140 + Math.random() * 40, this.ctx.currentTime);
+        gain.gain.setValueAtTime(0.025, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.028);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.03);
+      }
+
+      playHeroHit() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+
+        const bufferSize = this.ctx.sampleRate * 0.28;
+        const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = (Math.random() * 2 - 1) * Math.sin((i / bufferSize) * Math.PI);
+        }
+        const noise = this.ctx.createBufferSource();
+        noise.buffer = buffer;
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(1200, now);
+        filter.frequency.exponentialRampToValueAtTime(350, now + 0.25);
+        const noiseGain = this.ctx.createGain();
+        noiseGain.gain.setValueAtTime(0.35, now);
+        noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 0.26);
+        noise.connect(filter);
+        filter.connect(noiseGain);
+        noiseGain.connect(this.ctx.destination);
+        noise.start(now);
+
+        const osc = this.ctx.createOscillator();
+        const oscGain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(190, now + 0.06);
+        osc.frequency.exponentialRampToValueAtTime(42, now + 0.34);
+        oscGain.gain.setValueAtTime(0.45, now + 0.06);
+        oscGain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+        osc.connect(oscGain);
+        oscGain.connect(this.ctx.destination);
+        osc.start(now + 0.06);
+        osc.stop(now + 0.36);
+
+        const clang = this.ctx.createOscillator();
+        const clangGain = this.ctx.createGain();
+        clang.type = 'triangle';
+        clang.frequency.setValueAtTime(1480, now + 0.05);
+        clang.frequency.exponentialRampToValueAtTime(620, now + 0.28);
+        clangGain.gain.setValueAtTime(0.2, now + 0.05);
+        clangGain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+        clang.connect(clangGain);
+        clangGain.connect(this.ctx.destination);
+        clang.start(now + 0.05);
+        clang.stop(now + 0.31);
+      }
+
+      playMonsterHit() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(135, now);
+        osc.frequency.linearRampToValueAtTime(55, now + 0.42);
+        gain.gain.setValueAtTime(0.32, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.46);
+      }
+
+      playVictory() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const notes = [523.25, 659.25, 783.99, 1046.5];
+        notes.forEach((freq, idx) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'triangle';
+          const t = this.ctx.currentTime + idx * 0.12;
+          osc.frequency.setValueAtTime(freq, t);
+          gain.gain.setValueAtTime(0.18, t);
+          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.45);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(t);
+          osc.stop(t + 0.46);
+        });
+      }
+    }
+
+    const sfx = new SoundFX();
+
+    /**
+     * =========================================================================
+     * 5. PARÇACIK & ŞOK DALGASI EFEKT TUVALİ (CANVAS)
+     * =========================================================================
+     */
+    const fxCanvas = document.getElementById('fx-canvas');
+    const fxCtx = fxCanvas.getContext('2d');
+    const particles = [];
+    const shockwaves = [];
+
+    function resizeFxCanvas() {
+      if (!fxCanvas) return;
+      const rect = fxCanvas.parentElement.getBoundingClientRect();
+      fxCanvas.width = Math.max(1, Math.floor(rect.width));
+      fxCanvas.height = Math.max(1, Math.floor(rect.height));
+    }
+
+    window.addEventListener('resize', () => {
+      resizeFxCanvas();
+      updateBubblePositions();
+    });
+
+    function spawnHitParticles(x, y, attacker = 'hero') {
+      const colors = attacker === 'hero'
+        ? ['#fef08a', '#fbbf24', '#38bdf8', '#ffffff', '#fb923c']
+        : ['#a855f7', '#6b7280', '#f43f5e', '#374151'];
+
+      shockwaves.push({
+        x,
+        y,
+        radius: 14,
+        alpha: 0.9,
+        color: attacker === 'hero' ? '#fef08a' : '#c084fc'
+      });
+
+      const count = attacker === 'hero' ? 32 : 26;
+      for (let i = 0; i < count; i++) {
+        const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.4;
+        const speed = (attacker === 'hero' ? 4 : 3) + Math.random() * 8;
+        particles.push({
+          x,
+          y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed - (attacker === 'hero' ? 2.5 : 1),
+          radius: attacker === 'hero' ? (2.5 + Math.random() * 4) : (6 + Math.random() * 10),
+          alpha: 1,
+          decay: attacker === 'hero' ? (0.024 + Math.random() * 0.018) : (0.018 + Math.random() * 0.012),
+          color: colors[Math.floor(Math.random() * colors.length)],
+          isSmoke: attacker !== 'hero'
+        });
+      }
+    }
+
+    /**
+     * =========================================================================
+     * 6. GERÇEKÇİ 2D HİYERARŞİK İSKELET (RİG) EKLEM MOTORU
+     * =========================================================================
+     */
+    class SkeletalRigController {
+      constructor() {
+        this.heroAction = null;
+        this.monsterAction = null;
+      }
+
+      setJoint(rootEl, selector, angleDeg) {
+        if (!rootEl) return;
+        const el = rootEl.querySelector(selector);
+        if (!el) return;
+        const px = parseFloat(el.getAttribute('data-px') || '0');
+        const py = parseFloat(el.getAttribute('data-py') || '0');
+        el.setAttribute('transform', `rotate(${angleDeg.toFixed(2)}, ${px}, ${py})`);
+      }
+
+      triggerHeroAttack() {
+        this.heroAction = { type: 'attack', startTime: performance.now() };
+      }
+
+      triggerHeroHit() {
+        this.heroAction = { type: 'hit', startTime: performance.now() };
+      }
+
+      triggerMonsterAttack() {
+        this.monsterAction = { type: 'attack', startTime: performance.now() };
+      }
+
+      triggerMonsterHit() {
+        this.monsterAction = { type: 'hit', startTime: performance.now() };
+      }
+
+      lerp(a, b, t) {
+        return a + (b - a) * Math.max(0, Math.min(1, t));
+      }
+
+      easeOutCubic(t) {
+        return 1 - Math.pow(1 - t, 3);
+      }
+
+      update(now) {
+        const heroMount = document.getElementById('hero-svg-mount');
+        const monsterMount = document.getElementById('monster-svg-mount');
+        const heroAnimWrapper = document.getElementById('hero-animator');
+        const monsterAnimWrapper = document.getElementById('monster-animator');
+
+        // 1) KAHRAMAN İSKELET GÜNCELLEMESİ
+        if (heroMount && heroAnimWrapper) {
+          const idlePhase = now * 0.0032;
+          let dashX = 0;
+          let jumpY = Math.sin(idlePhase) * -3.5;
+          let torsoAngle = Math.sin(idlePhase) * 2.0;
+          let headAngle = Math.sin(idlePhase - 0.5) * -2.2;
+          let frontArm = Math.sin(idlePhase) * 4.5;
+          let frontForearm = Math.sin(idlePhase + 0.4) * -5.5;
+          let weaponAngle = Math.sin(idlePhase) * 3.5;
+          let backArm = Math.sin(idlePhase + 1) * -4;
+          let frontLeg = Math.sin(idlePhase) * -2;
+          let backLeg = Math.sin(idlePhase) * 2;
+          let flailAngle = Math.sin(idlePhase * 1.4) * 10;
+
+          if (this.heroAction) {
+            const elapsed = now - this.heroAction.startTime;
+            const isMobile = window.innerWidth < 640;
+            const maxDash = isMobile ? 75 : 155;
+
+            if (this.heroAction.type === 'attack') {
+              if (elapsed < 200) {
+                const t = this.easeOutCubic(elapsed / 200);
+                dashX = this.lerp(0, -18, t);
+                torsoAngle = this.lerp(0, -16, t);
+                headAngle = this.lerp(0, 8, t);
+                frontArm = this.lerp(0, -78, t);
+                frontForearm = this.lerp(0, -58, t);
+                weaponAngle = this.lerp(0, -35, t);
+                backArm = this.lerp(0, -24, t);
+                frontLeg = this.lerp(0, 12, t);
+                backLeg = this.lerp(0, -14, t);
+                flailAngle = this.lerp(0, -45, t);
+              } else if (elapsed < 370) {
+                const t = this.easeOutCubic((elapsed - 200) / 170);
+                dashX = this.lerp(-18, maxDash, t);
+                jumpY = Math.sin(t * Math.PI) * -18;
+                torsoAngle = this.lerp(-16, 20, t);
+                headAngle = this.lerp(8, -10, t);
+                frontArm = this.lerp(-78, 62, t);
+                frontForearm = this.lerp(-58, 22, t);
+                weaponAngle = this.lerp(-35, 48, t);
+                backArm = this.lerp(-24, 28, t);
+                frontLeg = this.lerp(12, -26, t);
+                backLeg = this.lerp(-14, 24, t);
+                flailAngle = this.lerp(-45, 78, t);
+              } else if (elapsed < 470) {
+                dashX = maxDash;
+                torsoAngle = 20;
+                headAngle = -10;
+                frontArm = 62;
+                frontForearm = 22;
+                weaponAngle = 48;
+                backArm = 28;
+                frontLeg = -26;
+                backLeg = 24;
+                flailAngle = 84;
+              } else if (elapsed < 820) {
+                const t = this.easeOutCubic((elapsed - 470) / 350);
+                dashX = this.lerp(maxDash, 0, t);
+                torsoAngle = this.lerp(20, 0, t);
+                headAngle = this.lerp(-10, 0, t);
+                frontArm = this.lerp(62, 0, t);
+                frontForearm = this.lerp(22, 0, t);
+                weaponAngle = this.lerp(48, 0, t);
+                backArm = this.lerp(28, 0, t);
+                frontLeg = this.lerp(-26, 0, t);
+                backLeg = this.lerp(24, 0, t);
+                flailAngle = this.lerp(84, 0, t);
+              } else {
+                this.heroAction = null;
+              }
+            } else if (this.heroAction.type === 'hit') {
+              if (elapsed < 550) {
+                const decay = 1 - elapsed / 550;
+                const shake = Math.sin(elapsed * 0.06) * 18 * decay;
+                dashX = -22 * decay + shake;
+                torsoAngle = -16 * decay;
+                headAngle = -20 * decay;
+                frontArm = -25 * decay;
+                backArm = 25 * decay;
+                heroAnimWrapper.style.filter = elapsed < 220 ? 'brightness(1.7) sepia(0.8) hue-rotate(-40deg)' : '';
+              } else {
+                heroAnimWrapper.style.filter = '';
+                this.heroAction = null;
+              }
+            }
+          }
+
+          heroAnimWrapper.style.transform = `translate3d(${dashX.toFixed(1)}px, ${jumpY.toFixed(1)}px, 0)`;
+          this.setJoint(heroMount, '.rig-torso', torsoAngle);
+          this.setJoint(heroMount, '.rig-head', headAngle);
+          this.setJoint(heroMount, '.rig-arm-front', frontArm);
+          this.setJoint(heroMount, '.rig-forearm', frontForearm);
+          this.setJoint(heroMount, '.rig-weapon', weaponAngle);
+          this.setJoint(heroMount, '.rig-arm-back', backArm);
+          this.setJoint(heroMount, '.rig-leg-l', frontLeg);
+          this.setJoint(heroMount, '.rig-leg-r', backLeg);
+          this.setJoint(heroMount, '.rig-flail-chain', flailAngle);
+        }
+
+        // 2) SİGARA CANAVARI İSKELET GÜNCELLEMESİ
+        if (monsterMount && monsterAnimWrapper) {
+          const mPhase = now * 0.0036;
+          let mDashX = 0;
+          let mJumpY = Math.sin(mPhase) * -6;
+          let mTorso = Math.sin(mPhase * 0.8) * 2.5;
+          let mHead = Math.cos(mPhase) * 2;
+          let mFrontArm = Math.sin(mPhase) * 8;
+          let mFrontForearm = Math.cos(mPhase) * -10;
+          let mClaw = Math.sin(mPhase * 1.5) * 8;
+          let mBackArm = Math.cos(mPhase) * -8;
+
+          if (this.monsterAction) {
+            const elapsed = now - this.monsterAction.startTime;
+            const isMobile = window.innerWidth < 640;
+            const maxDash = isMobile ? -75 : -155;
+
+            if (this.monsterAction.type === 'attack') {
+              if (elapsed < 200) {
+                const t = this.easeOutCubic(elapsed / 200);
+                mDashX = this.lerp(0, 18, t);
+                mTorso = this.lerp(0, 14, t);
+                mFrontArm = this.lerp(0, 48, t);
+                mFrontForearm = this.lerp(0, 35, t);
+                mBackArm = this.lerp(0, -45, t);
+              } else if (elapsed < 380) {
+                const t = this.easeOutCubic((elapsed - 200) / 180);
+                mDashX = this.lerp(18, maxDash, t);
+                mJumpY = Math.sin(t * Math.PI) * -20;
+                mTorso = this.lerp(14, -18, t);
+                mFrontArm = this.lerp(48, -58, t);
+                mFrontForearm = this.lerp(35, -35, t);
+                mClaw = this.lerp(0, -28, t);
+                mBackArm = this.lerp(-45, 52, t);
+              } else if (elapsed < 800) {
+                const t = this.easeOutCubic((elapsed - 380) / 420);
+                mDashX = this.lerp(maxDash, 0, t);
+                mTorso = this.lerp(-18, 0, t);
+                mFrontArm = this.lerp(-58, 0, t);
+                mFrontForearm = this.lerp(-35, 0, t);
+                mClaw = this.lerp(-28, 0, t);
+                mBackArm = this.lerp(52, 0, t);
+              } else {
+                this.monsterAction = null;
+              }
+            } else if (this.monsterAction.type === 'hit') {
+              if (elapsed < 560) {
+                const decay = 1 - elapsed / 560;
+                const shake = Math.sin(elapsed * 0.065) * 20 * decay;
+                mDashX = 24 * decay + shake;
+                mTorso = 18 * decay;
+                mHead = 14 * decay;
+                mFrontArm = 45 * decay;
+                mBackArm = -45 * decay;
+                monsterAnimWrapper.style.filter = elapsed < 210 ? 'brightness(2.2) sepia(0.9) hue-rotate(-50deg)' : '';
+              } else {
+                monsterAnimWrapper.style.filter = '';
+                this.monsterAction = null;
+              }
+            }
+          }
+
+          monsterAnimWrapper.style.transform = `translate3d(${mDashX.toFixed(1)}px, ${mJumpY.toFixed(1)}px, 0)`;
+          this.setJoint(monsterMount, '.rig-torso', mTorso);
+          this.setJoint(monsterMount, '.rig-head', mHead);
+          this.setJoint(monsterMount, '.rig-arm-front', mFrontArm);
+          this.setJoint(monsterMount, '.rig-forearm', mFrontForearm);
+          this.setJoint(monsterMount, '.rig-weapon', mClaw);
+          this.setJoint(monsterMount, '.rig-arm-back', mBackArm);
+        }
+      }
+    }
+
+    const rigController = new SkeletalRigController();
+
+    /**
+     * =========================================================================
+     * 7. DİNAMİK KAFA ÜSTÜ KONUŞMA BALONU KONUMLANDIRICI
+     * Karakter küçüldükçe balonların kuyruğu her zaman karakterin gerçek
+     * kafasının tam üzerinde kalır ve asla ekran dışına taşmaz.
+     * =========================================================================
+     */
+    function updateBubblePositions() {
+      const arena = document.getElementById('arena-container');
+      const heroScaler = document.getElementById('hero-scaler');
+      const monsterScaler = document.getElementById('monster-scaler');
+      const heroAnchor = document.getElementById('hero-bubbles-anchor');
+      const monsterAnchor = document.getElementById('monster-bubble-anchor');
+
+      if (!arena || !heroScaler || !monsterScaler || !heroAnchor || !monsterAnchor) return;
+
+      const arenaRect = arena.getBoundingClientRect();
+      if (arenaRect.width === 0 || arenaRect.height === 0) return;
+
+      const heroRect = heroScaler.getBoundingClientRect();
+      const monsterRect = monsterScaler.getBoundingClientRect();
+
+      // Kahramanın gerçek kafa tepe noktası ve yatay merkezi
+      const heroCenterX = (heroRect.left + heroRect.right) / 2 - arenaRect.left;
+      const heroHeadTop = heroRect.top - arenaRect.top;
+      const heroAnchorH = heroAnchor.offsetHeight || 120;
+
+      // Balon kuyruğu kafanın tam 16px üzerinde durur, üstten ekran dışına taşmaz
+      let heroBottom = arenaRect.height - heroHeadTop + 16;
+      const maxHeroBottom = arenaRect.height - heroAnchorH - 46;
+      heroBottom = Math.max(40, Math.min(maxHeroBottom, heroBottom));
+
+      const heroHalfW = (heroAnchor.offsetWidth || 220) / 2;
+      const clampedHeroX = Math.max(heroHalfW + 8, Math.min(arenaRect.width / 2 - 6, heroCenterX));
+
+      heroAnchor.style.left = `${clampedHeroX.toFixed(1)}px`;
+      heroAnchor.style.bottom = `${heroBottom.toFixed(1)}px`;
+
+      // Sigara Canavarının gerçek kafa tepe noktası ve yatay merkezi
+      const monsterCenterX = (monsterRect.left + monsterRect.right) / 2 - arenaRect.left;
+      const monsterHeadTop = monsterRect.top - arenaRect.top;
+      const monsterAnchorH = monsterAnchor.offsetHeight || 95;
+
+      let monsterBottom = arenaRect.height - monsterHeadTop + 16;
+      const maxMonsterBottom = arenaRect.height - monsterAnchorH - 46;
+      monsterBottom = Math.max(40, Math.min(maxMonsterBottom, monsterBottom));
+
+      const monsterHalfW = (monsterAnchor.offsetWidth || 220) / 2;
+      const clampedMonsterX = Math.max(arenaRect.width / 2 + 6, Math.min(arenaRect.width - monsterHalfW - 8, monsterCenterX));
+
+      monsterAnchor.style.left = `${clampedMonsterX.toFixed(1)}px`;
+      monsterAnchor.style.bottom = `${monsterBottom.toFixed(1)}px`;
+    }
+
+    function animateFxLoop(now = performance.now()) {
+      rigController.update(now);
+
+      if (!document.getElementById('battle-screen').classList.contains('hidden')) {
+        updateBubblePositions();
+      }
+
+      fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
+
+      for (let i = shockwaves.length - 1; i >= 0; i--) {
+        const sw = shockwaves[i];
+        sw.radius += 8.5;
+        sw.alpha -= 0.045;
+        if (sw.alpha <= 0) {
+          shockwaves.splice(i, 1);
+          continue;
+        }
+        fxCtx.save();
+        fxCtx.beginPath();
+        fxCtx.arc(sw.x, sw.y, sw.radius, 0, Math.PI * 2);
+        fxCtx.strokeStyle = sw.color;
+        fxCtx.globalAlpha = Math.max(0, sw.alpha);
+        fxCtx.lineWidth = 4;
+        fxCtx.stroke();
+        fxCtx.restore();
+      }
+
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        if (!p.isSmoke) {
+          p.vy += 0.25;
+        } else {
+          p.vy -= 0.08;
+          p.radius += 0.25;
+        }
+        p.alpha -= p.decay;
+        if (p.alpha <= 0) {
+          particles.splice(i, 1);
+          continue;
+        }
+        fxCtx.save();
+        fxCtx.globalAlpha = Math.max(0, p.alpha);
+        fxCtx.fillStyle = p.color;
+        fxCtx.beginPath();
+        fxCtx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        fxCtx.fill();
+        fxCtx.restore();
+      }
+
+      requestAnimationFrame(animateFxLoop);
+    }
+
+    /**
+     * =========================================================================
+     * 8. OYUN DURUMU VE MANTIK YÖNETİMİ
+     * =========================================================================
+     */
+    const state = {
+      heroName: 'Ragnar',
+      selectedHeroId: 'viking',
+      selectedMapId: 'istanbul',
+      customMapDataUrl: null,
+      selectedLevel: 'ilkel',
+      rounds: [],
+      currentIndex: 0,
+      heroSize: 100,
+      monsterSize: 100,
+      correctCount: 0,
+      streak: 0,
+      isTyping: false,
+      typingTimer: null,
+      fullMonsterLine: '',
+      roundResolved: false
+    };
+
+    function showToast(msg, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const el = document.createElement('div');
+      const styles = {
+        info: 'bg-slate-900 border-amber-400 text-amber-200',
+        success: 'bg-emerald-950 border-emerald-400 text-emerald-200',
+        danger: 'bg-rose-950 border-rose-400 text-rose-200'
+      };
+      el.className = `px-4 py-2.5 rounded-xl border text-xs sm:text-sm font-bold shadow-2xl transition-all duration-300 ${styles[type] || styles.info}`;
+      el.textContent = msg;
+      container.appendChild(el);
+      setTimeout(() => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(-10px)';
+        setTimeout(() => el.remove(), 300);
+      }, 2600);
+    }
+
+    function renderSetupCards() {
+      const heroGrid = document.getElementById('hero-grid');
+      heroGrid.innerHTML = '';
+      const defaultHeroNames = HEROES.map(h => h.defaultHeroName);
+
+      HEROES.forEach(hero => {
+        const isSelected = hero.id === state.selectedHeroId;
+        const card = document.createElement('button');
+        card.type = 'button';
+        card.className = `p-3 rounded-2xl border-2 text-left transition-all flex flex-col items-center justify-between gap-2 ${
+          isSelected
+            ? 'bg-amber-500/15 border-amber-400 shadow-lg shadow-amber-500/15 scale-[1.02]'
+            : 'bg-slate-950/70 border-slate-800 hover:border-slate-600'
+        }`;
+        card.innerHTML = `
+          <div class="w-24 h-28 sm:w-28 sm:h-32 pointer-events-none">${hero.svg}</div>
+          <div class="w-full text-center">
+            <div class="font-rpg font-bold text-sm sm:text-base text-white">${hero.name}</div>
+            <div class="text-[11px] font-semibold text-amber-300">${hero.weapon}</div>
+            <p class="text-[11px] text-slate-400 mt-1 line-clamp-2">${hero.desc}</p>
+          </div>
+        `;
+        card.addEventListener('click', () => {
+          sfx.playSelect();
+          state.selectedHeroId = hero.id;
+          const nameInput = document.getElementById('hero-name-input');
+          const curVal = nameInput.value.trim();
+          if (!curVal || defaultHeroNames.includes(curVal)) {
+            nameInput.value = hero.defaultHeroName;
+          }
+          document.getElementById('selected-hero-label').textContent = `Seçili: ${hero.name} • ${nameInput.value.trim()} (${hero.weapon})`;
+          renderSetupCards();
+        });
+        heroGrid.appendChild(card);
+      });
+
+      const mapGrid = document.getElementById('map-grid');
+      mapGrid.innerHTML = '';
+      CITY_MAPS.forEach(city => {
+        const isSelected = !state.customMapDataUrl && city.id === state.selectedMapId;
+        const card = document.createElement('button');
+        card.type = 'button';
+        card.className = `group relative overflow-hidden rounded-2xl border-2 text-left transition-all h-28 sm:h-32 flex flex-col justify-end p-3 ${
+          isSelected
+            ? 'border-sky-400 shadow-lg shadow-sky-500/20 scale-[1.02]'
+            : 'border-slate-800 hover:border-slate-600'
+        }`;
+
+        card.innerHTML = `
+          <div class="absolute inset-0 z-0 pointer-events-none">
+            <div class="w-full h-full">${city.svg}</div>
+            <img src="${city.imgPath}" alt="${city.name}" onerror="this.style.display='none'" class="w-full h-full object-cover absolute inset-0" />
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
+          </div>
+          <div class="relative z-10">
+            <div class="font-bold text-sm sm:text-base text-white flex items-center justify-between drop-shadow">
+              <span>${city.name}</span>
+              ${isSelected ? '<span class="text-xs bg-sky-400 text-slate-950 font-extrabold px-2 py-0.5 rounded-full">Seçili</span>' : ''}
+            </div>
+            <div class="text-[11px] text-slate-100 drop-shadow">${city.subtitle}</div>
+            <div class="text-[10px] text-amber-300 font-mono drop-shadow">${city.imgPath}</div>
+          </div>
+        `;
+
+        card.addEventListener('click', () => {
+          sfx.playSelect();
+          state.customMapDataUrl = null;
+          state.selectedMapId = city.id;
+          renderSetupCards();
+        });
+        mapGrid.appendChild(card);
+      });
+    }
+
+    document.querySelectorAll('.level-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        sfx.playSelect();
+        document.querySelectorAll('.level-btn').forEach(b => {
+          b.className = 'level-btn p-3 rounded-xl border border-slate-700/80 bg-slate-950/60 hover:bg-slate-800/80 text-left transition flex flex-col justify-between';
+        });
+        btn.className = 'level-btn active-level p-3 rounded-xl border text-left transition flex flex-col justify-between bg-amber-500/20 border-amber-400 text-white shadow-lg shadow-amber-500/10';
+        state.selectedLevel = btn.dataset.level;
+      });
+    });
+
+    const SAMPLE_NAMES = [
+      'Ragnar', 'Batur Bey', 'Sör Godfrey', 'Kenshin', 'Maximus',
+      'Alparslan', 'Kürşad', 'Mete Han', 'Demir Yürek', 'Temiz Nefes'
+    ];
+    document.getElementById('random-name-btn').addEventListener('click', () => {
+      sfx.playSelect();
+      const input = document.getElementById('hero-name-input');
+      const current = input.value.trim();
+      const candidates = SAMPLE_NAMES.filter(n => n !== current);
+      input.value = candidates[Math.floor(Math.random() * candidates.length)];
+    });
+
+    document.getElementById('custom-map-upload').addEventListener('change', (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        state.customMapDataUrl = ev.target.result;
+        renderSetupCards();
+        showToast(`"${file.name}" savaş haritası olarak yüklendi!`, 'success');
+      };
+      reader.readAsDataURL(file);
+    });
+
+    document.getElementById('sound-toggle-btn').addEventListener('click', (e) => {
+      sfx.enabled = !sfx.enabled;
+      e.currentTarget.textContent = sfx.enabled ? '🔊' : '🔇';
+      showToast(sfx.enabled ? 'Ses efektleri açıldı' : 'Ses efektleri kapatıldı', 'info');
+    });
+
+    // Güneşli Harita Arka Planını Yükle (/img/*.jpg ön yükleyici + SVG fallback)
+    function applyArenaBackground() {
+      const svgBg = document.getElementById('arena-svg-bg');
+      const imgBg = document.getElementById('arena-img-bg');
+      const city = CITY_MAPS.find(c => c.id === state.selectedMapId) || CITY_MAPS[0];
+
+      svgBg.innerHTML = city.svg;
+
+      if (state.customMapDataUrl) {
+        imgBg.src = state.customMapDataUrl;
+        imgBg.classList.remove('hidden');
+        document.getElementById('hud-city-name').textContent = '📍 Özel Harita';
+      } else {
+        document.getElementById('hud-city-name').textContent = `📍 ${city.name}`;
+        imgBg.classList.add('hidden');
+        const tester = new Image();
+        tester.onload = () => {
+          imgBg.src = city.imgPath;
+          imgBg.classList.remove('hidden');
+        };
+        tester.onerror = () => {
+          imgBg.classList.add('hidden');
+        };
+        tester.src = city.imgPath;
+      }
+    }
+
+    function updateSizeVisuals() {
+      const heroPct = Math.max(15, Math.min(125, Math.round(state.heroSize)));
+      const monsterPct = Math.max(18, Math.min(145, Math.round(state.monsterSize)));
+
+      const heroScale = heroPct / 100;
+      const monsterScale = monsterPct / 100;
+
+      document.getElementById('hero-scaler').style.transform = `scale(${heroScale})`;
+      document.getElementById('monster-scaler').style.transform = `scale(${monsterScale})`;
+
+      document.getElementById('hud-hero-size-text').textContent = `Boyut: %${heroPct}`;
+      document.getElementById('hud-monster-size-text').textContent = `Boyut: %${monsterPct}`;
+      document.getElementById('arena-hero-pct').textContent = `(%${heroPct})`;
+      document.getElementById('arena-monster-pct').textContent = `(%${monsterPct})`;
+
+      document.getElementById('hud-hero-bar').style.width = `${Math.min(100, heroPct)}%`;
+      document.getElementById('hud-monster-bar').style.width = `${Math.min(100, (monsterPct / 100) * 100)}%`;
+      document.getElementById('hud-streak').textContent = `Seri: ${state.streak} 🔥`;
+    }
+
+    function showFloatingText(targetSide, text, isPositive) {
+      const container = document.getElementById('floating-texts');
+      const el = document.createElement('div');
+      el.className = `anim-float-dmg absolute font-rpg font-black text-base sm:text-2xl drop-shadow-[0_4px_10px_rgba(0,0,0,0.85)] ${
+        isPositive ? 'text-emerald-300' : 'text-rose-400'
+      }`;
+      el.style.left = targetSide === 'monster' ? '68%' : '20%';
+      el.style.top = '52%';
+      el.textContent = text;
+      container.appendChild(el);
+      setTimeout(() => el.remove(), 1400);
+    }
+
+    function triggerSlashVisual(heroObj, targetSide = 'monster') {
+      const overlay = document.getElementById('slash-overlay');
+      const slashEl = document.createElement('div');
+      slashEl.className = 'anim-slash absolute w-48 h-48 sm:w-64 sm:h-64';
+      slashEl.style.left = targetSide === 'monster' ? '58%' : '14%';
+      slashEl.style.top = '44%';
+
+      if (targetSide === 'monster') {
+        slashEl.innerHTML = `
+          <svg viewBox="0 0 200 200" class="w-full h-full overflow-visible">
+            <defs>
+              <filter id="sl-glow">
+                <feGaussianBlur stdDeviation="5" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+            </defs>
+            <path d="M25,165 Q95,20 185,35 Q115,75 45,180 Z" fill="${heroObj.slashColor}" filter="url(#sl-glow)"/>
+            <path d="M35,160 Q100,32 180,38" stroke="#ffffff" stroke-width="5" fill="none" stroke-linecap="round"/>
+            <path d="M160,165 Q90,35 20,45" stroke="${heroObj.slashColor}" stroke-width="4" fill="none" stroke-dasharray="12 6"/>
+          </svg>
+        `;
+      } else {
+        slashEl.innerHTML = `
+          <svg viewBox="0 0 200 200" class="w-full h-full overflow-visible">
+            <path d="M170,30 L40,140 M180,65 L50,165 M160,15 L30,115" stroke="#a855f7" stroke-width="9" stroke-linecap="round"/>
+            <path d="M170,30 L40,140 M180,65 L50,165 M160,15 L30,115" stroke="#f43f5e" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        `;
+      }
+
+      overlay.appendChild(slashEl);
+      setTimeout(() => slashEl.remove(), 550);
+    }
+
+    function typeMonsterDialogue(text) {
+      clearInterval(state.typingTimer);
+      state.fullMonsterLine = text;
+      state.isTyping = true;
+      const el = document.getElementById('monster-dialogue-text');
+      el.textContent = '';
+      let i = 0;
+      state.typingTimer = setInterval(() => {
+        if (i < text.length) {
+          el.textContent += text[i];
+          if (i % 3 === 0) sfx.playTypeBlip();
+          i++;
+        } else {
+          finishTypingMonster();
+        }
+      }, 22);
+    }
+
+    function finishTypingMonster() {
+      clearInterval(state.typingTimer);
+      state.isTyping = false;
+      document.getElementById('monster-dialogue-text').textContent = state.fullMonsterLine;
+    }
+
+    document.getElementById('monster-bubble-box').addEventListener('click', () => {
+      if (state.isTyping) finishTypingMonster();
+    });
+
+    function startBattle() {
+      sfx.playSelect();
+      const heroObj = HEROES.find(h => h.id === state.selectedHeroId) || HEROES[0];
+      const rawName = document.getElementById('hero-name-input').value.trim();
+      state.heroName = rawName || heroObj.defaultHeroName;
+
+      if (state.selectedLevel === 'tumu') {
+        state.rounds = [...DIALOGUE_DATA];
+      } else {
+        state.rounds = DIALOGUE_DATA.filter(d => d.level === state.selectedLevel);
+      }
+
+      state.currentIndex = 0;
+      state.heroSize = 100;
+      state.monsterSize = 100;
+      state.correctCount = 0;
+      state.streak = 0;
+      state.roundResolved = false;
+
+      document.getElementById('hud-hero-name').textContent = state.heroName;
+      document.getElementById('arena-hero-name').textContent = state.heroName;
+      document.getElementById('hud-hero-class').textContent = `${heroObj.name} • ${heroObj.weapon}`;
+
+      const levelTitles = {
+        ilkel: 'İLKEL SEVİYE',
+        orta: 'ORTA SEVİYE',
+        ileri: 'İLERİ SEVİYE',
+        tumu: 'TÜM SEVİYELER'
+      };
+      document.getElementById('hud-level-badge').textContent = levelTitles[state.selectedLevel];
+
+      document.getElementById('hero-svg-mount').innerHTML = heroObj.svg;
+      document.getElementById('monster-svg-mount').innerHTML = CIGARETTE_MONSTER_SVG;
+
+      document.getElementById('setup-screen').classList.add('hidden');
+      document.getElementById('result-modal').classList.add('hidden');
+      document.getElementById('battle-screen').classList.remove('hidden');
+
+      applyArenaBackground();
+      resizeFxCanvas();
+      updateSizeVisuals();
+      loadRound(0);
+    }
+
+    /**
+     * RAUNT YÜKLEME — KAHRAMANIN KAFASININ ÜSTÜNDE 2 KOMPAKT BEYAZ KONUŞMA BALONU
+     */
+    function loadRound(index) {
+      state.currentIndex = index;
+      state.roundResolved = false;
+      const round = state.rounds[index];
+
+      document.getElementById('hud-round-text').textContent = `${index + 1} / ${state.rounds.length}`;
+      document.getElementById('monster-level-pill').textContent = round.levelLabel;
+      document.getElementById('next-round-btn').classList.add('hidden');
+      document.getElementById('turn-instruction').innerHTML = '<span>💬 Kafanın üstündeki beyaz balondan makul cevabı seç!</span>';
+
+      typeMonsterDialogue(`"${round.monster}"`);
+
+      // 1 Makul Cevap + 1 Tuzak Bahane (Rastgele Karıştırılmış)
+      const options = [
+        { text: round.answer, isCorrect: true },
+        { text: round.trap, isCorrect: false }
+      ];
+      if (Math.random() < 0.5) {
+        options.reverse();
+      }
+
+      const heroBubblesWrap = document.getElementById('hero-choice-bubbles');
+      heroBubblesWrap.innerHTML = '';
+
+      options.forEach((opt, idx) => {
+        const isBottomBubble = idx === options.length - 1;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `comic-bubble hero-option-bubble pointer-events-auto text-left w-full ${
+          isBottomBubble ? 'comic-tail-down' : ''
+        }`;
+        btn.innerHTML = `
+          <div class="flex items-center justify-between gap-1 mb-0.5 border-b border-slate-200 pb-0.5">
+            <span class="font-extrabold text-[9.5px] sm:text-[10px] uppercase tracking-wider text-amber-700 truncate">🛡️ ${state.heroName}</span>
+            <span class="bubble-status-tag text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-slate-100 text-slate-600">Seçenek ${idx + 1}</span>
+          </div>
+          <p class="text-slate-900 font-semibold">${opt.text}</p>
+        `;
+        btn.addEventListener('click', () => handleBubbleChoice(opt, btn, heroBubblesWrap));
+        heroBubblesWrap.appendChild(btn);
+      });
+
+      requestAnimationFrame(updateBubblePositions);
+    }
+
+    /**
+     * KAHRAMANIN KAFASININ ÜSTÜNDEKİ BEYAZ KONUŞMA BALONU SEÇİLDİĞİNDE
+     */
+    function handleBubbleChoice(chosenOption, clickedBtn, containerEl) {
+      if (state.roundResolved) return;
+      if (state.isTyping) finishTypingMonster();
+      state.roundResolved = true;
+
+      const heroObj = HEROES.find(h => h.id === state.selectedHeroId) || HEROES[0];
+      const allBubbles = Array.from(containerEl.querySelectorAll('.hero-option-bubble'));
+
+      // Seçilmeyen balonu yumuşakça gizle; seçilen balonu kuyruklu biçimde kafa üstünde tut!
+      allBubbles.forEach(b => {
+        b.disabled = true;
+        if (b !== clickedBtn) {
+          b.classList.add('bubble-collapsed');
+        } else {
+          b.classList.add('comic-tail-down');
+          const tag = b.querySelector('.bubble-status-tag');
+          if (chosenOption.isCorrect) {
+            b.style.borderColor = '#059669';
+            if (tag) {
+              tag.textContent = '✅ Makul Cevap';
+              tag.className = 'bubble-status-tag text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-emerald-100 text-emerald-800';
+            }
+          } else {
+            b.style.borderColor = '#e11d48';
+            if (tag) {
+              tag.textContent = '⚠️ Bahane';
+              tag.className = 'bubble-status-tag text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-rose-100 text-rose-800';
+            }
+          }
+        }
+      });
+
+      const arena = document.getElementById('arena-container');
+
+      if (chosenOption.isCorrect) {
+        // MAKUL CEVAP -> KAHRAMAN İLERİ ATILIR, EL-KOL-SİLAH İLE VURUR & CANAVAR KÜÇÜLÜR!
+        state.correctCount++;
+        state.streak++;
+
+        const shrinkStep = Math.max(8, Math.round(78 / state.rounds.length));
+        state.monsterSize = Math.max(20, state.monsterSize - shrinkStep);
+        state.heroSize = Math.min(118, state.heroSize + 2);
+
+        document.getElementById('turn-instruction').innerHTML = `<span class="text-emerald-300">⚔️ ${state.heroName} makul cevabıyla Sigara Canavarını küçülttü!</span>`;
+
+        setTimeout(() => {
+          sfx.playHeroHit();
+          rigController.triggerHeroAttack();
+
+          setTimeout(() => {
+            triggerSlashVisual(heroObj, 'monster');
+            spawnHitParticles(fxCanvas.width * 0.72, fxCanvas.height * 0.68, 'hero');
+            arena.classList.add('anim-screen-shake');
+            rigController.triggerMonsterHit();
+            showFloatingText('monster', `-${shrinkStep}% BOYUT!`, true);
+            updateSizeVisuals();
+          }, 320);
+
+          setTimeout(() => {
+            arena.classList.remove('anim-screen-shake');
+            prepareNextStep();
+          }, 840);
+        }, 260);
+
+      } else {
+        // TUZAK BAHANE -> SİGARA CANAVARI PENÇELERİYLE SALDIRIR & KAHRAMAN KÜÇÜLÜR!
+        state.streak = 0;
+        const heroShrink = 25;
+        state.heroSize = Math.max(15, state.heroSize - heroShrink);
+        state.monsterSize = Math.min(138, state.monsterSize + 10);
+
+        document.getElementById('turn-instruction').innerHTML = '<span class="text-rose-300">💨 Bahaneye kandın! Sigara Canavarı büyüdü ve seni küçülttü!</span>';
+
+        setTimeout(() => {
+          sfx.playMonsterHit();
+          rigController.triggerMonsterAttack();
+
+          setTimeout(() => {
+            triggerSlashVisual(heroObj, 'hero');
+            spawnHitParticles(fxCanvas.width * 0.28, fxCanvas.height * 0.68, 'monster');
+            arena.classList.add('anim-screen-shake');
+            rigController.triggerHeroHit();
+
+            const vignette = document.getElementById('damage-vignette');
+            vignette.style.opacity = '1';
+            setTimeout(() => { vignette.style.opacity = '0'; }, 400);
+
+            showFloatingText('hero', `-${heroShrink}% BOYUT!`, false);
+            updateSizeVisuals();
+          }, 320);
+
+          setTimeout(() => {
+            arena.classList.remove('anim-screen-shake');
+            prepareNextStep();
+          }, 840);
+        }, 260);
+      }
+    }
+
+    function prepareNextStep() {
+      if (state.heroSize <= 15) {
+        showEndModal(false);
+        return;
+      }
+
+      const nextBtn = document.getElementById('next-round-btn');
+      if (state.currentIndex + 1 >= state.rounds.length) {
+        nextBtn.innerHTML = '<span>🏆 Savaşı Tamamla</span>';
+      } else {
+        nextBtn.innerHTML = '<span>Sonraki Raunt ➡️</span>';
+      }
+      nextBtn.classList.remove('hidden');
+    }
+
+    document.getElementById('next-round-btn').addEventListener('click', () => {
+      sfx.playSelect();
+      if (state.currentIndex + 1 >= state.rounds.length) {
+        showEndModal(true);
+      } else {
+        loadRound(state.currentIndex + 1);
+      }
+    });
+
+    function showEndModal(isVictory) {
+      const modal = document.getElementById('result-modal');
+      const badge = document.getElementById('result-badge');
+      const title = document.getElementById('result-title');
+      const desc = document.getElementById('result-desc');
+      const glow = document.getElementById('result-glow');
+      const nextLvlBtn = document.getElementById('next-level-btn');
+
+      document.getElementById('stat-correct').textContent = `${state.correctCount} / ${state.rounds.length}`;
+      document.getElementById('stat-hero-final').textContent = `%${Math.round(state.heroSize)}`;
+      document.getElementById('stat-monster-final').textContent = `%${Math.round(state.monsterSize)}`;
+
+      if (isVictory) {
+        sfx.playVictory();
+        badge.className = 'inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-xs sm:text-sm font-extrabold uppercase tracking-wider';
+        badge.textContent = '🏆 İRADE ZAFERİ';
+        title.textContent = 'SİGARA CANAVARI KÜÇÜLÜP YENİLDİ!';
+        desc.textContent = `Tebrikler ${state.heroName}! Mantıklı ve kararlı cevaplarınla Sigara Canavarının tüm bahanelerini çürüttün.`;
+        glow.className = 'absolute -top-24 left-1/2 -translate-x-1/2 w-80 h-48 bg-emerald-500/25 blur-3xl pointer-events-none';
+
+        if (state.selectedLevel !== 'tumu') {
+          nextLvlBtn.classList.remove('hidden');
+        } else {
+          nextLvlBtn.classList.add('hidden');
+        }
+      } else {
+        badge.className = 'inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-rose-500/20 border border-rose-400/40 text-rose-300 text-xs sm:text-sm font-extrabold uppercase tracking-wider';
+        badge.textContent = '💨 DUMANA YENİLDİN';
+        title.textContent = 'BAHANELER İRADENİ KÜÇÜLTTÜ!';
+        desc.textContent = `${state.heroName}, Sigara Canavarının tuzak cümlelerine kapıldın. Ama vazgeçmek yok; hemen tekrar deneyip onu yenebilirsin!`;
+        glow.className = 'absolute -top-24 left-1/2 -translate-x-1/2 w-80 h-48 bg-rose-500/25 blur-3xl pointer-events-none';
+        nextLvlBtn.classList.add('hidden');
+      }
+
+      modal.classList.remove('hidden');
+    }
+
+    document.getElementById('start-battle-btn').addEventListener('click', startBattle);
+    document.getElementById('replay-btn').addEventListener('click', startBattle);
+
+    document.getElementById('next-level-btn').addEventListener('click', () => {
+      const order = ['ilkel', 'orta', 'ileri', 'tumu'];
+      const nextIdx = Math.min(order.length - 1, order.indexOf(state.selectedLevel) + 1);
+      state.selectedLevel = order[nextIdx];
+      startBattle();
+    });
+
+    function returnToSetupMenu() {
+      sfx.playSelect();
+      clearInterval(state.typingTimer);
+      document.getElementById('result-modal').classList.add('hidden');
+      document.getElementById('battle-screen').classList.add('hidden');
+      document.getElementById('setup-screen').classList.remove('hidden');
+    }
+
+    document.getElementById('back-menu-btn').addEventListener('click', returnToSetupMenu);
+    document.getElementById('modal-menu-btn').addEventListener('click', returnToSetupMenu);
+
+    window.onload = function () {
+      renderSetupCards();
+      animateFxLoop();
+    };
+  </script>
+</body>
+</html>
